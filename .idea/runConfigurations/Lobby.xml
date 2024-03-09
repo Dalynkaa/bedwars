@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Lobby" type="JarApplication" folderName="Servers">
+    <option name="JAR_PATH" value="$USER_HOME$/MinecraftServers/BedWarsServers/BedWarsLobby/paper.jar" />
+    <option name="VM_PARAMETERS" value="-Xms2G -Xmx4G" />
+    <option name="PROGRAM_PARAMETERS" value="nogui" />
+    <option name="WORKING_DIRECTORY" value="C:\Users\zambo\MinecraftServers\BedWarsServers\BedWarsLobby" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method v="2" />
+  </configuration>
+</component>
