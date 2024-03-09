@@ -1,6 +1,5 @@
 package me.dalynkaa.spbedwars.commands.arenacommand.subcommands;
 
-import dev.lone.itemsadder.api.CustomStack;
 import dev.lone.itemsadder.api.ItemsAdder;
 import me.dalynkaa.spbedwars.SPBedWars;
 import me.dalynkaa.spbedwars.commands.arenacommand.ArenaSubCommand;

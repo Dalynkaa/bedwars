@@ -1,6 +1,5 @@
 package me.dalynkaa.spbedwars.commands.gameCommand.subcommands;
 
-import me.dalynkaa.spbedwars.SPBedWars;
 import me.dalynkaa.spbedwars.commands.gameCommand.GameManager;
 import me.dalynkaa.spbedwars.commands.gameCommand.GameSubCommand;
 import me.dalynkaa.spbedwars.utils.dataclasses.enums.Teams;
@@ -11,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class DestroyBed extends GameSubCommand {
 

@@ -1,6 +1,5 @@
 package me.dalynkaa.spbedwars.huds.bossBarHuds.bedStatusHud;
 
-import com.destroystokyo.paper.ClientOption;
 import me.dalynkaa.spbedwars.huds.bossBarHuds.AbstractBossBarHud;
 import me.dalynkaa.spbedwars.huds.utils.RenderStatus;
 import me.dalynkaa.spbedwars.huds.utils.RenderStatusType;
@@ -11,14 +10,8 @@ import me.dalynkaa.spbedwars.utils.dataclasses.player.BPlayer;
 import me.dalynkaa.spbedwars.utils.hudConstans.Chars;
 import me.dalynkaa.spbedwars.utils.hudConstans.Offset;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class BedStatusHud extends AbstractBossBarHud {

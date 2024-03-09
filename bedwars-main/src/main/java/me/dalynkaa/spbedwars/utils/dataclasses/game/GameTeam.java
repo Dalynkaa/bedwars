@@ -1,6 +1,5 @@
 package me.dalynkaa.spbedwars.utils.dataclasses.game;
 
-import dev.lone.itemsadder.api.ItemsAdder;
 import me.dalynkaa.spbedwars.utils.dataclasses.enums.MessageType;
 import me.dalynkaa.spbedwars.utils.dataclasses.enums.TeamUpgrades;
 import me.dalynkaa.spbedwars.utils.dataclasses.enums.Teams;

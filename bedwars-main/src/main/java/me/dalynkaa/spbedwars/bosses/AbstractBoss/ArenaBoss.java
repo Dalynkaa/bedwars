@@ -1,7 +1,6 @@
 package me.dalynkaa.spbedwars.bosses.AbstractBoss;
 
 import me.dalynkaa.spbedwars.utils.dataclasses.game.GameLocation;
-import me.dalynkaa.spbedwars.utils.dataclasses.game.GameTeam;
 
 public abstract class ArenaBoss {
     public abstract String getName();

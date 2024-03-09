@@ -1,7 +1,6 @@
 package me.dalynkaa.spbedwars.huds.bossBarHuds;
 
 import me.dalynkaa.spbedwars.huds.utils.RenderStatus;
-import me.dalynkaa.spbedwars.utils.dataclasses.player.BPlayer;
 
 import java.util.UUID;
 

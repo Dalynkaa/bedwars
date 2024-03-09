@@ -1,6 +1,5 @@
 package me.dalynkaa.spbedwars.utils.dataclasses.enums;
 
-import dev.lone.itemsadder.api.FontImages.FontImageWrapper;
 import me.dalynkaa.spbedwars.utils.hudConstans.Chars;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.DyeColor;

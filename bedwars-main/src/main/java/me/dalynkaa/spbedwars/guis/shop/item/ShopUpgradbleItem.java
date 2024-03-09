@@ -1,7 +1,5 @@
 package me.dalynkaa.spbedwars.guis.shop.item;
 
-import dev.triumphteam.gui.builder.item.ItemBuilder;
-import dev.triumphteam.gui.guis.GuiItem;
 import me.dalynkaa.spbedwars.utils.dataclasses.player.TeamPlayer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;

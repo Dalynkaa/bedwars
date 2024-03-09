@@ -1,11 +1,8 @@
 package me.dalynkaa.spbedwars.utils.hudConstans;
 
-import me.dalynkaa.spbedwars.utils.Logger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 
-import java.awt.*;
-import java.util.HashMap;
 import java.util.Map;
 
 public enum Chars {

@@ -1,8 +1,6 @@
 package me.dalynkaa.spbedwars.huds;
 
 import me.dalynkaa.spbedwars.SPBedWars;
-import me.dalynkaa.spbedwars.huds.actionBarHuds.ActionBarRenderer;
-import me.dalynkaa.spbedwars.huds.bossBarHuds.BossBarRenderer;
 import me.dalynkaa.spbedwars.utils.Logger;
 import me.dalynkaa.spbedwars.utils.dataclasses.player.BPlayer;
 import org.bukkit.Bukkit;

@@ -5,13 +5,11 @@ import me.dalynkaa.spbedwars.huds.bossBarHuds.bedStatusHud.TimerStatusHud;
 import me.dalynkaa.spbedwars.huds.utils.CustomBossBar;
 import me.dalynkaa.spbedwars.huds.utils.RenderStatus;
 import me.dalynkaa.spbedwars.huds.utils.RenderStatusType;
-import me.dalynkaa.spbedwars.utils.Logger;
-import me.dalynkaa.spbedwars.utils.hudConstans.Chars;
-import me.dalynkaa.spbedwars.utils.hudConstans.Offset;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.UUID;
 
 public class BossBarRenderer {
     private final HashSet<AbstractBossBarHud> BOSS_BAR_HUDS;

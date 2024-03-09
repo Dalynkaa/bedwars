@@ -9,7 +9,6 @@ import me.dalynkaa.spbedwars.utils.dataclasses.game.enums.GameShopType;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.MemoryNPCDataStore;
 import net.citizensnpcs.api.trait.trait.Equipment;
-import net.citizensnpcs.npc.CitizensNPC;
 import net.citizensnpcs.trait.LookClose;
 import net.citizensnpcs.trait.SkinTrait;
 import org.bukkit.Bukkit;

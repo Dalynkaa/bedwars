@@ -1,12 +1,5 @@
 package me.dalynkaa.spbedwars.commands.arenacommand.subcommands;
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.flags.StateFlag;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.managers.storage.StorageException;
-import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import me.dalynkaa.spbedwars.SPBedWars;
 import me.dalynkaa.spbedwars.commands.arenacommand.ArenaSubCommand;
 import me.dalynkaa.spbedwars.utils.config.Config;

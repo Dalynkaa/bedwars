@@ -1,7 +1,5 @@
 package me.dalynkaa.spbedwars.utils.dataclasses.enums;
 
-import org.bukkit.Material;
-
 public enum TeamUpgrades {
     SHARPNESS("Острота",4),
     REINFORCED_ARMOR1("Укрепленная броня I", 2),

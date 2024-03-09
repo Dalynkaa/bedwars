@@ -6,7 +6,6 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.jetbrains.annotations.NotNull;
 import org.mineskin.MineskinClient;
-import org.mineskin.data.MineskinException;
 
 import java.util.HashMap;
 import java.util.Map;

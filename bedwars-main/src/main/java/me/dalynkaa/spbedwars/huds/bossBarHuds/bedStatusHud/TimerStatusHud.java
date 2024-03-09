@@ -3,12 +3,7 @@ package me.dalynkaa.spbedwars.huds.bossBarHuds.bedStatusHud;
 import me.dalynkaa.spbedwars.huds.bossBarHuds.AbstractBossBarHud;
 import me.dalynkaa.spbedwars.huds.utils.RenderStatus;
 import me.dalynkaa.spbedwars.huds.utils.RenderStatusType;
-import me.dalynkaa.spbedwars.utils.dataclasses.game.BWGame;
-import me.dalynkaa.spbedwars.utils.dataclasses.game.GameTeam;
-import me.dalynkaa.spbedwars.utils.dataclasses.game.enums.GameStage;
-import me.dalynkaa.spbedwars.utils.dataclasses.player.BPlayer;
 import me.dalynkaa.spbedwars.utils.hudConstans.Chars;
-import me.dalynkaa.spbedwars.utils.hudConstans.Offset;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 

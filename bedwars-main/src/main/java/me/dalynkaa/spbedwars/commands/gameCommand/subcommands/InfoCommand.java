@@ -1,6 +1,5 @@
 package me.dalynkaa.spbedwars.commands.gameCommand.subcommands;
 
-import me.dalynkaa.spbedwars.SPBedWars;
 import me.dalynkaa.spbedwars.commands.gameCommand.GameManager;
 import me.dalynkaa.spbedwars.commands.gameCommand.GameSubCommand;
 import me.dalynkaa.spbedwars.utils.dataclasses.game.BWGame;
@@ -9,7 +8,6 @@ import me.dalynkaa.spbedwars.utils.dataclasses.player.BPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.UUID;
 
 public class InfoCommand extends GameSubCommand {
     @Override

@@ -1,11 +1,11 @@
 package me.dalynkaa.spbedwars.utils;
 
 
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.dalynkaa.spbedwars.SPBedWars;
 import me.dalynkaa.spbedwars.utils.dataclasses.game.GameTeam;
 import me.dalynkaa.spbedwars.utils.dataclasses.player.BPlayer;
 import me.dalynkaa.spbedwars.utils.dataclasses.player.TeamPlayer;
-import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;

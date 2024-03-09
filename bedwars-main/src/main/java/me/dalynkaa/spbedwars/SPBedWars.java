@@ -1,10 +1,7 @@
 package me.dalynkaa.spbedwars;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.ListenerPriority;
-import io.lumine.mythic.bukkit.utils.adventure.platform.bukkit.BukkitAudiences;
 import me.dalynkaa.spbedwars.commands.arenacommand.ArenaManager;
 import me.dalynkaa.spbedwars.commands.bedwars.BedWarsManager;
 import me.dalynkaa.spbedwars.commands.gameCommand.GameManager;
@@ -23,8 +20,6 @@ import me.dalynkaa.spbedwars.utils.dataclasses.another.CustomSkin;
 import me.dalynkaa.spbedwars.utils.dataclasses.game.*;
 import me.dalynkaa.spbedwars.utils.dataclasses.game.teams.TeamBed;
 import me.dalynkaa.spbedwars.utils.usableClasses.InventoryButton;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;

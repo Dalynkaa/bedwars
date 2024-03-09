@@ -1,13 +1,12 @@
 package me.dalynkaa.spbedwars.infoServices.scoreboard;
 
+import me.catcoder.sidebar.ProtocolSidebar;
+import me.catcoder.sidebar.Sidebar;
 import me.dalynkaa.spbedwars.SPBedWars;
 import me.dalynkaa.spbedwars.utils.dataclasses.game.BWGame;
 import me.dalynkaa.spbedwars.utils.dataclasses.game.enums.GameStage;
 import me.dalynkaa.spbedwars.utils.dataclasses.player.BPlayer;
 import me.dalynkaa.spbedwars.utils.dataclasses.player.TeamPlayer;
-import me.catcoder.sidebar.ProtocolSidebar;
-import me.catcoder.sidebar.Sidebar;
-import me.catcoder.sidebar.text.TextIterators;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.GameMode;

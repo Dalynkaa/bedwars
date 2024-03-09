@@ -1,7 +1,6 @@
 package me.dalynkaa.spbedwars.utils.hudConstans;
 
 
-import me.dalynkaa.spbedwars.utils.Logger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
