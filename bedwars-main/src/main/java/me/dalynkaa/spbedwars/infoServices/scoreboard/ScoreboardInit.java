@@ -17,16 +17,17 @@ import java.util.Date;
 public class ScoreboardInit {
     Sidebar<Component> sidebar;
     BPlayer bPlayer;
-    public ScoreboardInit(SPBedWars main, TeamPlayer player, GameStage stage){
+
+    public ScoreboardInit(SPBedWars main, TeamPlayer player, GameStage stage) {
         this.bPlayer = player;
         sidebar = ProtocolSidebar.newAdventureSidebar(Component.text("Bed", TextColor.fromCSSHexString("#d63031")).append(Component.text("Ward", TextColor.fromCSSHexString("#ff7675"))), main);
         sidebar.removeViewers();
-        if (stage.equals(GameStage.WAITING) || stage.equals(GameStage.WAITING_TIMER)){
+        if (stage.equals(GameStage.WAITING) || stage.equals(GameStage.WAITING_TIMER)) {
             waitingStage();
         } else if (stage.equals(GameStage.RUNNING)) {
-            if (player.getPlayer().getGameMode().equals(GameMode.SPECTATOR)){
+            if (player.getPlayer().getGameMode().equals(GameMode.SPECTATOR)) {
                 specStage();
-            }else {
+            } else {
                 runningStage();
             }
 
@@ -34,14 +35,15 @@ public class ScoreboardInit {
 
         sidebar.addBlankLine();
         sidebar.addLine(Component.text("play.spworlds.ru", TextColor.fromCSSHexString("#636e72")));
-        sidebar.updateLinesPeriodically(0,10,true);
+        sidebar.updateLinesPeriodically(0, 10, true);
         sidebar.addViewer(player.getPlayer());
     }
-    public void clear(){
+
+    public void clear() {
         sidebar.removeViewer(bPlayer.getPlayer());
     }
 
-    public void waitingStage(){
+    public void waitingStage() {
         sidebar.addUpdatableLine(player -> {
             BPlayer bPlayer = BPlayer.getByUUID(player.getUniqueId());
             BWGame game = SPBedWars.getInstance().activeGames.get(bPlayer.getCurrentGame());
@@ -55,30 +57,32 @@ public class ScoreboardInit {
             return Component.text(" Режим: ", TextColor.fromCSSHexString("#e17055")).append(Component.text(game.getArena().getArenaType().getTranslate(), TextColor.fromCSSHexString("#fab1a0")));
         });
     }
-    public void runningStage(){
+
+    public void runningStage() {
         String pattern = "dd-MM-yyyy";
-        String dateInString =new SimpleDateFormat(pattern).format(new Date());
+        String dateInString = new SimpleDateFormat(pattern).format(new Date());
         BWGame game = bPlayer.getGame();
         sidebar.addLine(Component.text(dateInString, TextColor.fromCSSHexString("#636e72"))
                 .append(Component.text(" / ")
-                        .append(Component.text(game.getGameId().toString().substring(game.getGameId().toString().length()-4)))));
+                        .append(Component.text(game.getGameId().toString().substring(game.getGameId().toString().length() - 4)))));
         sidebar.addBlankLine();
 
         sidebar.addUpdatableLine(player -> {
             BPlayer bPlayer = BPlayer.getByUUID(player.getUniqueId());
             return (Component) Component.text("Алмазы ")
-            .append(Component.text("2"))
-            .append(Component.text(" через "))
-            .append(Component.text("0:00"));
+                    .append(Component.text("2"))
+                    .append(Component.text(" через "))
+                    .append(Component.text("0:00"));
         });
     }
-    public void specStage(){
+
+    public void specStage() {
         String pattern = "dd-MM-yyyy";
-        String dateInString =new SimpleDateFormat(pattern).format(new Date());
+        String dateInString = new SimpleDateFormat(pattern).format(new Date());
         BWGame game = bPlayer.getGame();
         sidebar.addLine(Component.text(dateInString, TextColor.fromCSSHexString("#636e72"))
                 .append(Component.text(" / ")
-                        .append(Component.text(game.getGameId().toString().substring(game.getGameId().toString().length()-4)))));
+                        .append(Component.text(game.getGameId().toString().substring(game.getGameId().toString().length() - 4)))));
         sidebar.addBlankLine();
     }
 

@@ -26,7 +26,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
-public class TeamPlayer extends BPlayer{
+public class TeamPlayer extends BPlayer {
 
     public TeamPlayer(UUID uuid) {
         super(uuid);
@@ -37,14 +37,14 @@ public class TeamPlayer extends BPlayer{
 
     }
 
-    public GameTeam getGameTeam(){
+    public GameTeam getGameTeam() {
         BWGame game = getGame();
-        if (game == null){
+        if (game == null) {
             return null;
         }
-        for (GameTeam gameTeam: game.getTeamsInGame()){
-            for (TeamPlayer teamPlayer: gameTeam.getTeamPlayers()){
-                if (teamPlayer.getUuid().equals(getUuid())){
+        for (GameTeam gameTeam : game.getTeamsInGame()) {
+            for (TeamPlayer teamPlayer : gameTeam.getTeamPlayers()) {
+                if (teamPlayer.getUuid().equals(getUuid())) {
                     return gameTeam;
                 }
             }
@@ -53,7 +53,7 @@ public class TeamPlayer extends BPlayer{
         return null;
     }
 
-    public void spawn(){
+    public void spawn() {
         GameLocation location = getGameTeam().getSpawn();
         getPlayer().teleport(location.getLocation());
         getPlayer().setGameMode(GameMode.SURVIVAL);
@@ -101,12 +101,13 @@ public class TeamPlayer extends BPlayer{
 
         sendMessage("Игра началась!", MessageType.SUCCESS);
     }
+
     /**
      * Respawn the player and set their game mode to survival.
      *
      * @param event The PlayerRespawnEvent triggered when the player respawns
      */
-    public void respawn(PlayerRespawnEvent event){
+    public void respawn(PlayerRespawnEvent event) {
         GameLocation spectatorLocation = getGame().getArena().getSpectatorLocation();
         GameLocation teamLocation = getGameTeam().getSpawn();
         event.setRespawnLocation(spectatorLocation.getLocation());
@@ -118,24 +119,25 @@ public class TeamPlayer extends BPlayer{
         getPlayer().getInventory().setItem(0, sword);
         clearInventory();
         getPlayer().setGameMode(GameMode.SPECTATOR);
-        GameUtils.startPlayerTimer(this,5, "До возрождения", (game) -> {
+        GameUtils.startPlayerTimer(this, 5, "До возрождения", (game) -> {
             getPlayer().teleport(teamLocation.getLocation());
             getPlayer().setGameMode(GameMode.SURVIVAL);
             sendMessage("Вы возродились!", MessageType.SUCCESS);
         });
     }
-    public void clearInventory(){
+
+    public void clearInventory() {
         Inventory inventory = getPlayer().getInventory();
         ItemsForShop.Tools tools = new ItemsForShop.Tools();
-        for (ItemStack item: inventory.getContents()){
-            if (item == null){
+        for (ItemStack item : inventory.getContents()) {
+            if (item == null) {
                 continue;
             }
-            if (item.getItemMeta().getPersistentDataContainer().has(NamespacedKey.fromString("keep"), PersistentDataType.BOOLEAN)){
-                if (item.getItemMeta().getPersistentDataContainer().has(NamespacedKey.fromString("upgrade"), PersistentDataType.BOOLEAN)){
+            if (item.getItemMeta().getPersistentDataContainer().has(NamespacedKey.fromString("keep"), PersistentDataType.BOOLEAN)) {
+                if (item.getItemMeta().getPersistentDataContainer().has(NamespacedKey.fromString("upgrade"), PersistentDataType.BOOLEAN)) {
                     inventory.remove(item);
                     ItemType type = ItemType.valueOf(item.getItemMeta().getPersistentDataContainer().get(NamespacedKey.fromString("type"), PersistentDataType.STRING));
-                    inventory.addItem(tools.getToGiveByLvl(1,type,this));
+                    inventory.addItem(tools.getToGiveByLvl(1, type, this));
                     continue;
                 }
                 continue;
@@ -143,61 +145,67 @@ public class TeamPlayer extends BPlayer{
             inventory.remove(item);
         }
     }
+
     /**
      * Teleports the player to the spectator location and sets their game mode to spectator.
      * Sends an error message notifying the player that they have been eliminated.
      *
      * @param event The PlayerRespawnEvent that triggered this method.
      */
-    public void spectator(PlayerRespawnEvent event){
+    public void spectator(PlayerRespawnEvent event) {
         GameLocation location = getGame().getArena().getSpectatorLocation();
         event.setRespawnLocation(location.getLocation());
         getPlayer().setGameMode(GameMode.SPECTATOR);
         clearInventory();
-        if (getGameTeam().getTeamPlayers().size()-1<=0){
+        if (getGameTeam().getTeamPlayers().size() - 1 <= 0) {
             getGameTeam().setActive(false);
         }
         Logger.debug(getGame().getTeamsInGame().toString());
         getGameTeam().removeTeamPlayer(this);
-        if (getGame().getActiveTeams().size()==1){
+        if (getGame().getActiveTeams().size() == 1) {
             GameTeam lastTeam = getGame().getActiveTeams().get(0);
             getGame().endGame(lastTeam);
         }
         sendMessage("Вы выбыли!", MessageType.ERROR);
         new ScoreboardInit(SPBedWars.getInstance(), this, GameStage.RUNNING);
     }
-    public void placeBlock(BlockPlaceEvent event){
+
+    public void placeBlock(BlockPlaceEvent event) {
         getGame().addBlockToList(event.getBlockPlaced());
     }
-    public void breakBlock(BlockBreakEvent event){
-        if (!getGame().getPlacedBlocks().contains(event.getBlock())){
+
+    public void breakBlock(BlockBreakEvent event) {
+        if (!getGame().getPlacedBlocks().contains(event.getBlock())) {
             event.setCancelled(true);
             return;
         }
         getGame().removeBlockFromList(event.getBlock());
     }
-    public boolean canBreakBlock(Block block){
-        if (!getGame().getPlacedBlocks().contains(block)){
+
+    public boolean canBreakBlock(Block block) {
+        if (!getGame().getPlacedBlocks().contains(block)) {
             return true;
         }
         return false;
     }
-    public void breakBlock(Block block){
-        if (!getGame().getPlacedBlocks().contains(block)){
+
+    public void breakBlock(Block block) {
+        if (!getGame().getPlacedBlocks().contains(block)) {
             return;
         }
         getGame().removeBlockFromList(block);
     }
-    public boolean isLoose(){
-        return getGameTeam().getTeamPlayers().size()<=0;
+
+    public boolean isLoose() {
+        return getGameTeam().getTeamPlayers().size() <= 0;
     }
 
 
-    public static TeamPlayer fromPlayer(BPlayer player){
+    public static TeamPlayer fromPlayer(BPlayer player) {
         return new TeamPlayer(player);
     }
 
-    public enum ItemType{
+    public enum ItemType {
         SWORD,
         PICKAXE,
         AXE,

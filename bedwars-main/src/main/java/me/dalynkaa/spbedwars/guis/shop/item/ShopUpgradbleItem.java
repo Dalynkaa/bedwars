@@ -16,12 +16,13 @@ public class ShopUpgradbleItem {
     private Integer maxLvlItem;
     private TeamPlayer.ItemType type;
 
-    public ShopUpgradbleItem(){
+    public ShopUpgradbleItem() {
         this.upgrades = new HashMap<>();
         this.maxLvlItem = 0;
         this.type = null;
     }
-    private ShopUpgradbleItem(Integer maxLvlItem, TeamPlayer.ItemType type){
+
+    private ShopUpgradbleItem(Integer maxLvlItem, TeamPlayer.ItemType type) {
         upgrades = new HashMap<>();
         this.maxLvlItem = maxLvlItem;
         this.type = type;
@@ -40,41 +41,48 @@ public class ShopUpgradbleItem {
         return type;
     }
 
-    public static ShopUpgradbleItem builder(Integer maxLvlItem, TeamPlayer.ItemType type){
-        return new ShopUpgradbleItem(maxLvlItem,type);
+    public static ShopUpgradbleItem builder(Integer maxLvlItem, TeamPlayer.ItemType type) {
+        return new ShopUpgradbleItem(maxLvlItem, type);
     }
-    public ShopUpgradbleItem setType(TeamPlayer.ItemType type){
+
+    public ShopUpgradbleItem setType(TeamPlayer.ItemType type) {
         this.type = type;
         return this;
     }
-    public ShopUpgradbleItem setLvlItem(Integer lvl, ShopItem shopItem){
-        if (lvl > maxLvlItem){
+
+    public ShopUpgradbleItem setLvlItem(Integer lvl, ShopItem shopItem) {
+        if (lvl > maxLvlItem) {
             return this;
         }
         ShopItem shopItem1 = shopItem.addPercistData("upgrade", true).addPercistData("lvl", lvl).addPercistData("type", getType().name());
         upgrades.put(lvl, shopItem1);
         return this;
     }
-    public void getLvlItem(Integer lvl){
+
+    public void getLvlItem(Integer lvl) {
         upgrades.get(lvl);
     }
-    public void removeLvlItem(Integer lvl){
+
+    public void removeLvlItem(Integer lvl) {
         upgrades.remove(lvl);
     }
-    public void clear(){
+
+    public void clear() {
         upgrades.clear();
     }
-    public ShopItem getPlayerShopItem(Integer lvl){
+
+    public ShopItem getPlayerShopItem(Integer lvl) {
         return upgrades.get(lvl);
     }
-    public static Integer getPlayerItemLvl(Player player, TeamPlayer.ItemType type){
+
+    public static Integer getPlayerItemLvl(Player player, TeamPlayer.ItemType type) {
         Inventory inventory = player.getInventory();
-        for (ItemStack item: inventory.getContents()){
-            if (item == null){
+        for (ItemStack item : inventory.getContents()) {
+            if (item == null) {
                 continue;
             }
-            if (item.getItemMeta().getPersistentDataContainer().has(NamespacedKey.fromString("upgrade"), PersistentDataType.BOOLEAN)){
-                if (item.getItemMeta().getPersistentDataContainer().get(NamespacedKey.fromString("type"), PersistentDataType.STRING).equals(type.name())){
+            if (item.getItemMeta().getPersistentDataContainer().has(NamespacedKey.fromString("upgrade"), PersistentDataType.BOOLEAN)) {
+                if (item.getItemMeta().getPersistentDataContainer().get(NamespacedKey.fromString("type"), PersistentDataType.STRING).equals(type.name())) {
                     return item.getItemMeta().getPersistentDataContainer().get(NamespacedKey.fromString("lvl"), PersistentDataType.INTEGER);
                 }
             }

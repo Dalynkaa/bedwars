@@ -23,7 +23,7 @@ public class UpgradeItem {
     private IUpgradeActionButton<UpgradeItem, Player> customAction;
     private UpgradeGui gui;
 
-    public UpgradeItem(ItemStack item){
+    public UpgradeItem(ItemStack item) {
         this.name = null;
         this.lore = null;
         this.material = null;
@@ -32,7 +32,8 @@ public class UpgradeItem {
         this.customAction = null;
         this.gui = null;
     }
-    public UpgradeItem(){
+
+    public UpgradeItem() {
         this.name = null;
         this.lore = null;
         this.material = null;
@@ -96,27 +97,31 @@ public class UpgradeItem {
         this.lore = lore;
         return this;
     }
+
     public UpgradeItem setLore(Component lore) {
         this.lore = Arrays.asList(lore);
         return this;
     }
-    public UpgradeItem setCustomAction(IUpgradeActionButton<UpgradeItem, Player> action){
+
+    public UpgradeItem setCustomAction(IUpgradeActionButton<UpgradeItem, Player> action) {
         this.customAction = action;
         return this;
     }
-    public IUpgradeActionButton<UpgradeItem, Player> getCustomAction(){
+
+    public IUpgradeActionButton<UpgradeItem, Player> getCustomAction() {
         return this.customAction;
     }
 
 
-    public static UpgradeItem builder(){
+    public static UpgradeItem builder() {
         return new UpgradeItem();
     }
-    public GuiItem build(){
+
+    public GuiItem build() {
         ItemBuilder builder;
-        if (getMaterial() != null){
+        if (getMaterial() != null) {
             builder = ItemBuilder.from(getMaterial());
-        }else {
+        } else {
             builder = ItemBuilder.from(itemStack);
         }
         builder.name(getName());
@@ -126,14 +131,14 @@ public class UpgradeItem {
         return guiItem;
     }
 
-    public void action(InventoryClickEvent event){
+    public void action(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (!hasItemCount(player, Material.DIAMOND, getCostCount())){
+        if (!hasItemCount(player, Material.DIAMOND, getCostCount())) {
             return;
         }
         removeItems(player, Material.DIAMOND, getCostCount());
         getCustomAction().execute(this, player);
-        if (gui != null){
+        if (gui != null) {
             gui.update();
         }
     }
@@ -169,8 +174,9 @@ public class UpgradeItem {
         player.getInventory().setContents(contents);
         return count == 0;
     }
-    private Component getTranslatedMaterial(Material material, Integer count){
-        switch (material){
+
+    private Component getTranslatedMaterial(Material material, Integer count) {
+        switch (material) {
             case IRON_INGOT -> {
                 return Component.text(count, TextColor.fromCSSHexString("#dfe6e9")).append(Component.text(" железа", TextColor.fromCSSHexString("#b2bec3")));
             }

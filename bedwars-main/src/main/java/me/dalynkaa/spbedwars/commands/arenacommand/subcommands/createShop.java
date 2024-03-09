@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class createShop extends ArenaSubCommand{
+public class createShop extends ArenaSubCommand {
     @Override
     public String getName() {
         return "createShop";
@@ -32,50 +32,49 @@ public class createShop extends ArenaSubCommand{
 
     @Override
     public void perform(Player player, String[] args) {
-        if (SPBedWars.getInstance().currentCreation == null){
+        if (SPBedWars.getInstance().currentCreation == null) {
             player.sendMessage("Сначала создайте арену");
             return;
         }
-        if (args.length != 3){
+        if (args.length != 3) {
             player.sendMessage("Неверное количество аргументов");
             return;
         }
         GameShopType gameShopType = GameShopType.valueOf(args[1]);
-        if (gameShopType == null){
+        if (gameShopType == null) {
             player.sendMessage("Тип магазина не найден");
             return;
         }
         CustomSkin customSkin = CustomSkin.getSkin(args[2]);
-        if (customSkin == null){
+        if (customSkin == null) {
             player.sendMessage("Скин не найден");
             return;
         }
         ItemStack itemStack = player.getInventory().getItemInMainHand();
         String name = null;
-        if (itemStack!=null){
-            if (ItemsAdder.isCustomItem(itemStack)){
+        if (itemStack != null) {
+            if (ItemsAdder.isCustomItem(itemStack)) {
                 name = ItemsAdder.getCustomItemName(itemStack);
             }
         }
 
         GameLocation gameLocation = GameLocation.fromLocation(player.getLocation());
-        GameShop gameShop = new GameShop(gameLocation, GameShopType.UPGRADE,customSkin.getName(), name);
+        GameShop gameShop = new GameShop(gameLocation, GameShopType.UPGRADE, customSkin.getName(), name);
         SPBedWars.getInstance().currentCreation.getArena().getGameShops().add(gameShop);
         gameShop.spawn();
         player.sendMessage("Магазин создан");
     }
 
 
-
     @Override
     public List<String> getSubcommandArguments(Player player, String[] args) {
-        if (args.length == 2){
+        if (args.length == 2) {
             return GameShopType.getNames();
         }
-        if (args.length == 3){
+        if (args.length == 3) {
             ArrayList<String> subcommandsArguments1 = new ArrayList<>();
-            for (String skin: SkinConfig.getAllSkinsConfig()){
-                if (skin.toLowerCase().startsWith(args[2].toLowerCase())){
+            for (String skin : SkinConfig.getAllSkinsConfig()) {
+                if (skin.toLowerCase().startsWith(args[2].toLowerCase())) {
                     subcommandsArguments1.add(skin);
                 }
             }

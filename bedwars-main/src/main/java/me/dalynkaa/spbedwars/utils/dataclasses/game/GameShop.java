@@ -35,9 +35,9 @@ public class GameShop implements ConfigurationSerializable {
     public GameShop(GameLocation shopPosition, GameShopType shopType, String skinName, String headItemName) {
         this.shopPosition = shopPosition;
         this.shopType = shopType;
-        if (shopType.equals(GameShopType.NORMAL)){
+        if (shopType.equals(GameShopType.NORMAL)) {
             this.title = "Магазин предметов";
-        }else {
+        } else {
             this.title = "Магазин улучшений";
         }
         this.skin = CustomSkin.getSkin(skinName, CustomSkin.getSkin("default"));
@@ -75,6 +75,7 @@ public class GameShop implements ConfigurationSerializable {
     public void setTitle(String title) {
         this.title = title;
     }
+
     public String getHeadItemName() {
         return headItem;
     }
@@ -87,7 +88,7 @@ public class GameShop implements ConfigurationSerializable {
         this.skin = skin;
     }
 
-//    public void spawn(){
+    //    public void spawn(){
 //        npc = NPCLib.getInstance().generateGlobalNPC(SPBedWars.getInstance(), getShopType().name()+"_"+UUID.randomUUID(), getShopPosition().getLocation().add(0.5,0,0.5));
 //        npc.setShowOnTabList(false);
 //        npc.setText(getTitle());
@@ -113,22 +114,22 @@ public class GameShop implements ConfigurationSerializable {
 //            }
 //        }));
 //    }
-    public void spawn(){
-        net.citizensnpcs.api.npc.NPC npc = CitizensAPI.createAnonymousNPCRegistry(new MemoryNPCDataStore()).createNPC(EntityType.PLAYER, getShopType().name()+"_"+UUID.randomUUID());
-        npc.spawn(getShopPosition().getLocation().add(0.5,0,0.5));
+    public void spawn() {
+        net.citizensnpcs.api.npc.NPC npc = CitizensAPI.createAnonymousNPCRegistry(new MemoryNPCDataStore()).createNPC(EntityType.PLAYER, getShopType().name() + "_" + UUID.randomUUID());
+        npc.spawn(getShopPosition().getLocation().add(0.5, 0, 0.5));
         npc.setName(getTitle());
         npc.setProtected(true);
         npc.getOrAddTrait(SkinTrait.class).setSkinPersistent(getSkin().getName(), getSkin().getSignature(), getSkin().getValue());
         npc.getEntity().getPersistentDataContainer().set(NamespacedKey.fromString("type"), PersistentDataType.STRING, getShopType().name());
         npc.data().set("type", getShopType());
-        if (getHeadItemName()!=null){
-            if (ItemsAdder.areItemsLoaded() == false){
-                Bukkit.getScheduler().runTaskLater(SPBedWars.getInstance(), ()->{
-                    CustomStack customStack = CustomStack.getInstance("bedwars:"+getHeadItemName());
+        if (getHeadItemName() != null) {
+            if (ItemsAdder.areItemsLoaded() == false) {
+                Bukkit.getScheduler().runTaskLater(SPBedWars.getInstance(), () -> {
+                    CustomStack customStack = CustomStack.getInstance("bedwars:" + getHeadItemName());
                     Equipment equipment = npc.getOrAddTrait(Equipment.class);
                     equipment.set(Equipment.EquipmentSlot.HELMET, customStack.getItemStack());
                     Logger.debug("apply head item");
-                }, 20*20);
+                }, 20 * 20);
             }
         }
         LookClose lookClose = npc.getOrAddTrait(LookClose.class);
@@ -136,8 +137,9 @@ public class GameShop implements ConfigurationSerializable {
         lookClose.lookClose(true);
 
     }
-    public void despawn(){
-        if (npc!=null){
+
+    public void despawn() {
+        if (npc != null) {
             npc.despawn();
             npc.destroy();
 
@@ -153,6 +155,7 @@ public class GameShop implements ConfigurationSerializable {
         map.put("headItem", getHeadItemName());
         return map;
     }
+
     public static GameShop deserialize(Map<String, Object> map) {
         GameLocation shopLoc = (GameLocation) map.get("location");
         GameShopType gameShopType = GameShopType.valueOf((String) map.get("type"));

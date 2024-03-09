@@ -38,7 +38,7 @@ public class createCommand extends ArenaSubCommand {
     @Override
     public void perform(Player player, String[] args) {
         BPlayer bPlayer = BPlayer.getByUUID(player.getUniqueId());
-        if (args.length<4){
+        if (args.length < 4) {
             bPlayer.sendMessage(Component.text("Недостатосно аргументов!"), MessageType.ERROR);
             return;
         }
@@ -61,20 +61,20 @@ public class createCommand extends ArenaSubCommand {
 
     @Override
     public List<String> getSubcommandArguments(Player player, String[] args) {
-        if (args.length == 2){
+        if (args.length == 2) {
             return Arrays.asList("<имя_арены>");
         } else if (args.length == 3) {
             List<String> result = new ArrayList<>();
             result.add(Config.getServerType().name());
             return result;
-        }else if (args.length == 4) {
+        } else if (args.length == 4) {
             List<String> result = getAllArenasSchems();
             return result;
         }
         return null;
     }
 
-    public World createWorld(UUID uuid){
+    public World createWorld(UUID uuid) {
         WorldCreator wc = new WorldCreator(uuid.toString());
         wc.environment(World.Environment.NORMAL);
         wc.type(WorldType.FLAT);
@@ -82,15 +82,16 @@ public class createCommand extends ArenaSubCommand {
         wc.generatorSettings("{\"layers\": [{\"block\": \"air\", \"height\": 1}], \"biome\":\"plains\"}");
         World world = wc.createWorld();
         world.setDifficulty(Difficulty.PEACEFUL);
-        world.setGameRule(GameRule.MOB_GRIEFING,false);
-        world.setGameRule(GameRule.DO_MOB_SPAWNING,false);
+        world.setGameRule(GameRule.MOB_GRIEFING, false);
+        world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
         world.setGameRule(GameRule.KEEP_INVENTORY, true);
         world.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
-        Location location = new Location(world, 0, 0 ,0);
+        Location location = new Location(world, 0, 0, 0);
         location.getBlock().setType(Material.STONE);
         return world;
     }
-    public static List<String> getAllArenasSchems(){
+
+    public static List<String> getAllArenasSchems() {
         File dir = new File(SPBedWars.getInstance().getDataFolder().getPath(), "schem");
         List<String> schems = Arrays.stream(dir.list()).toList();
         return Arrays.stream(dir.list()).toList();

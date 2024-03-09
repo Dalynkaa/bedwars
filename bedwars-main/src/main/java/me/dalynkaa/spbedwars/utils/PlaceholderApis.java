@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlaceholderApis extends PlaceholderExpansion {
     private final SPBedWars plugin;
+
     public PlaceholderApis(SPBedWars plugin) {
         this.plugin = plugin;
     }
@@ -33,17 +34,17 @@ public class PlaceholderApis extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, String params) {
-        if(params.equalsIgnoreCase("team_collor")){
+        if (params.equalsIgnoreCase("team_collor")) {
             TeamPlayer teamPlayer = TeamPlayer.fromPlayer(BPlayer.getByUUID(player.getUniqueId()));
-            if (teamPlayer == null){
+            if (teamPlayer == null) {
                 return "";
             }
             GameTeam team = teamPlayer.getGameTeam();
-            if (team == null){
+            if (team == null) {
                 return "&#636e72";
             }
             TextColor color = team.getTeam().getTeamCollor();
-            return "&"+color.asHexString();
+            return "&" + color.asHexString();
         }
 
         return null;
