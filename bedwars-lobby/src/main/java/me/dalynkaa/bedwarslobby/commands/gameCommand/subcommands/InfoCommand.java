@@ -28,26 +28,25 @@ public class InfoCommand extends GameSubCommand {
 
     @Override
     public void perform(Player player, String[] args) {
-        if (args.length != 2){
+        if (args.length != 2) {
             player.sendMessage("Неверное количество аргументов");
             return;
         }
         UUID gameId = UUID.fromString(args[0]);
-        for (ServerRegistrator serverRegistrator: SPBedWarsLobby.getInstance().servers.values()){
-            for (GameRegistrator gameRegistrator: serverRegistrator.getGames()){
-                if (gameRegistrator.getGameId().equals(gameId))
-                {
+        for (ServerRegistrator serverRegistrator : SPBedWarsLobby.getInstance().servers.values()) {
+            for (GameRegistrator gameRegistrator : serverRegistrator.getGames()) {
+                if (gameRegistrator.getGameId().equals(gameId)) {
                     player.sendMessage("--------------info----------------");
                     player.sendMessage("GameId: " + gameRegistrator.getGameId());
                     player.sendMessage("GameName: " + gameRegistrator.getArenaName());
                     player.sendMessage("GameStage: " + gameRegistrator.getGameStage());
                     player.sendMessage("Players: " + gameRegistrator.getPlayers().size());
-                    for (BPlayer p: gameRegistrator.getPlayers()){
+                    for (BPlayer p : gameRegistrator.getPlayers()) {
                         player.sendMessage(" - " + p.getOPlayer().getName());
                     }
-                    player.sendMessage("MaxPlayers: " + serverRegistrator.getArenaType().getPlayers());
+                    player.sendMessage("MaxPlayers: " + gameRegistrator.getGameType().getPlayers());
                     player.sendMessage("Active teams: " + gameRegistrator.getActivePlayers().size());
-                    for (BPlayer team: gameRegistrator.getActivePlayers()){
+                    for (BPlayer team : gameRegistrator.getActivePlayers()) {
                         player.sendMessage(" - " + team.getOPlayer().getName());
                     }
                     player.sendMessage("--------------info----------------");

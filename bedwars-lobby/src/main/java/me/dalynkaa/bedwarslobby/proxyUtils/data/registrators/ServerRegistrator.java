@@ -1,7 +1,7 @@
 package me.dalynkaa.bedwarslobby.proxyUtils.data.registrators;
 
 import com.google.gson.Gson;
-import me.dalynkaa.bedwarslobby.proxyUtils.data.enums.ArenaTypes;
+import me.dalynkaa.bedwarslobby.proxyUtils.data.enums.ServerType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,13 +10,14 @@ import java.util.UUID;
 public class ServerRegistrator {
     private final UUID serverId;
     private final String serverName;
-    private final ArenaTypes arenaType;
+    private final ServerType serverType;
     private List<GameRegistrator> games;
     private Boolean isEdit;
-    public ServerRegistrator(UUID serverId, String serverName, ArenaTypes arenaType, Boolean isEdit) {
+
+    public ServerRegistrator(UUID serverId, String serverName, ServerType serverType, Boolean isEdit) {
         this.serverId = serverId;
         this.serverName = serverName;
-        this.arenaType = arenaType;
+        this.serverType = serverType;
         this.isEdit = isEdit;
     }
 
@@ -28,12 +29,12 @@ public class ServerRegistrator {
         return serverName;
     }
 
-    public ArenaTypes getArenaType() {
-        return arenaType;
+    public ServerType getServerType() {
+        return serverType;
     }
 
-    public void addGame(GameRegistrator gameRegistrator){
-        if (games == null){
+    public void addGame(GameRegistrator gameRegistrator) {
+        if (games == null) {
             games = new ArrayList<>();
         }
         games.add(gameRegistrator);
@@ -47,14 +48,15 @@ public class ServerRegistrator {
         isEdit = edit;
     }
 
-    public void removeGame(UUID gameId){
-        for (GameRegistrator game : games){
-            if (game.getGameId().equals(gameId)){
+    public void removeGame(UUID gameId) {
+        for (GameRegistrator game : games) {
+            if (game.getGameId().equals(gameId)) {
                 games.remove(game);
                 return;
             }
         }
     }
+
     public void updateGame(GameRegistrator gameRegistrator) {
         if (games == null) {
             games = new ArrayList<>();
@@ -74,16 +76,18 @@ public class ServerRegistrator {
             }
         }
     }
-    public List<GameRegistrator> getGames(){
+
+    public List<GameRegistrator> getGames() {
         return games;
     }
 
-    public String toJson(){
+    public String toJson() {
         Gson gson = new Gson();
         String json = gson.toJson(this);
         return json;
     }
-    public static ServerRegistrator fromJson(String json){
+
+    public static ServerRegistrator fromJson(String json) {
         Gson gson = new Gson();
         ServerRegistrator serverRegistrator = gson.fromJson(json, ServerRegistrator.class);
         return serverRegistrator;

@@ -102,7 +102,7 @@ public final class SPBedWars extends JavaPlugin {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderApis(this).register();
         }
-        BWGame.loadGames();
+        //BWGame.loadGames();
 
         //hud
         MainHudRenderer.startRenderer();

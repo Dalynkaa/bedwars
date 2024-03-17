@@ -3,8 +3,10 @@ package me.dalynkaa.spbedwars.proxyUtils;
 import me.dalynkaa.spbedwars.SPBedWars;
 import me.dalynkaa.spbedwars.proxyUtils.data.*;
 import me.dalynkaa.spbedwars.utils.Logger;
+import me.dalynkaa.spbedwars.utils.config.ArenaConfig;
 import me.dalynkaa.spbedwars.utils.config.Config;
 import me.dalynkaa.spbedwars.utils.dataclasses.game.BWGame;
+import me.dalynkaa.spbedwars.utils.dataclasses.game.GameArena;
 import me.dalynkaa.spbedwars.utils.dataclasses.player.TeamPlayer;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
@@ -66,9 +68,23 @@ public class ProxyUtils {
                 activePlayers.add(teamPlayer);
             }
         }
-        String json = new GameRegistrator(Config.getServerId(), game.getGameId(), game.getArena().getArenaName(), game.getArena().isEdit(), game.getGameStage(), game.getPlayers(), activePlayers).toJson();
+        String json = new GameRegistrator(Config.getServerId(), game.getGameId(), game.getArena().getArenaName(), game.getArena().isEdit(), game.getGameStage(), game.getPlayers(), activePlayers, game.getArena().getArenaType()).toJson();
         Jedis jedis = redisConnection.getJedis();
         jedis.publish(Channels.GAME_REGISTRATION.getChannel(), json);
+        returnRes(jedis);
+    }
+
+    public void registerArena(GameArena gameArena) {
+        ArenaRegistrator arenaRegistrator = new ArenaRegistrator(Config.getServerId(), gameArena.getArenaType(), gameArena.getArenaName(), gameArena.getId());
+        String json = arenaRegistrator.toJson();
+        Jedis jedis = redisConnection.getJedis();
+        jedis.publish(Channels.ARENA_REGISTRATION.getChannel(), json);
+        returnRes(jedis);
+    }
+
+    public void unregisterArena() {
+        Jedis jedis = redisConnection.getJedis();
+        jedis.publish(Channels.ARENA_UNREGISTRATION.getChannel(), Config.getServerId().toString());
         returnRes(jedis);
     }
 
@@ -78,9 +94,14 @@ public class ProxyUtils {
         Jedis jedis = redisConnection.getJedis();
         jedis.publish(Channels.SERVER_REGISTRATION.getChannel(), json);
         returnRes(jedis);
+        for (String config : ArenaConfig.getAllArenasConfig()) {
+            GameArena gameArena = GameArena.getByID(UUID.fromString(config));
+            registerArena(gameArena);
+        }
     }
 
     public void unregisterServer() {
+        unregisterArena();
         Jedis jedis = redisConnection.getJedis();
         jedis.publish(Channels.SERVER_UNREGISTRATION.getChannel(), Config.getServerId().toString());
         returnRes(jedis);
@@ -92,6 +113,12 @@ public class ProxyUtils {
         returnRes(jedis);
     }
 
+    public void sendPlayerToServer(UUID playerUUID, String serverName) {
+        Jedis jedis = redisConnection.getJedis();
+        jedis.publish(Channels.GAME_JOIN_REQUEST.getChannel(), playerUUID.toString() + ":" + serverName);
+        returnRes(jedis);
+    }
+
     public void updateGame(BWGame game) {
         List<TeamPlayer> activePlayers = new ArrayList<>();
         for (TeamPlayer teamPlayer : game.getPlayers()) {
@@ -99,7 +126,7 @@ public class ProxyUtils {
                 activePlayers.add(teamPlayer);
             }
         }
-        String json = new GameRegistrator(Config.getServerId(), game.getGameId(), game.getArena().getArenaName(), game.getArena().isEdit(), game.getGameStage(), game.getPlayers(), activePlayers).toJson();
+        String json = new GameRegistrator(Config.getServerId(), game.getGameId(), game.getArena().getArenaName(), game.getArena().isEdit(), game.getGameStage(), game.getPlayers(), activePlayers, game.getArena().getArenaType()).toJson();
         Jedis jedis = redisConnection.getJedis();
         jedis.publish(Channels.GAME_UPDATE.getChannel(), json);
         returnRes(jedis);
@@ -110,13 +137,29 @@ public class ProxyUtils {
         public void onMessage(String channel, String message) {
             if (channel.equals(Channels.SERVER_REGISTRATION_REQUEST.getChannel())) {
                 registerServer();
-                for (BWGame game : spBedWars.activeGames.values()) {
-                    registerGame(game);
-                }
+//                for (BWGame game : spBedWars.activeGames.values()) {
+//                    registerGame(game);
+//                }
             } else if (channel.equals(Channels.GAME_JOIN.getChannel())) {
                 GameJoinRegistrator gameJoinRegistrator = GameJoinRegistrator.fromJson(message);
                 if (gameJoinRegistrator.getServerId().equals(Config.getServerId())) {
-                    SPBedWars.getInstance().gameJoinTemp.put(gameJoinRegistrator.getUserUUID(), gameJoinRegistrator);
+                    if (gameJoinRegistrator.getJoinType().equals(GameJoinRegistrator.JoinType.CREATE)) {
+                        Logger.debug("Game creation request");
+                        Bukkit.getScheduler().runTask(SPBedWars.getInstance(), () -> {
+                            BWGame game = BWGame.createNewGame(gameJoinRegistrator.getGameId());
+                            gameJoinRegistrator.setGameId(game.getGameId());
+                            gameJoinRegistrator.setJoinType(GameJoinRegistrator.JoinType.JOIN);
+                            sendPlayerToServer(gameJoinRegistrator.getUserUUID(), Config.getServerName());
+                            //BungeeMessanging.sendServer(BPlayer.getByUUID(gameJoinRegistrator.getUserUUID()), Config.getServerName());
+                            SPBedWars.getInstance().gameJoinTemp.put(gameJoinRegistrator.getUserUUID(), gameJoinRegistrator);
+                        });
+                        return;
+                    }
+                    if (gameJoinRegistrator.getGameId() != null) {
+                        SPBedWars.getInstance().gameJoinTemp.put(gameJoinRegistrator.getUserUUID(), gameJoinRegistrator);
+                        sendPlayerToServer(gameJoinRegistrator.getUserUUID(), Config.getServerName());
+                        return;
+                    }
                 }
             } else if (channel.equals(Channels.SERVER_EDIT.getChannel())) {
                 ServerEditRegistrator serverEditRegistrator = ServerEditRegistrator.fromJson(message);
@@ -139,6 +182,7 @@ public class ProxyUtils {
                     Logger.info("Server edit set to " + serverEditRegistrator.isEdit());
                 }
             } else {
+                Logger.debug(channel.equals(Channels.GAME_JOIN.getChannel()) ? "Game join" : "Game update");
                 Logger.debug("Message from " + channel + ": " + message);
 
             }

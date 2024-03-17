@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import me.dalynkaa.bedwarslobby.SPBedWarsLobby;
 import me.dalynkaa.bedwarslobby.proxyUtils.data.enums.ArenaTypes;
 import me.dalynkaa.bedwarslobby.proxyUtils.data.enums.GameStage;
+import me.dalynkaa.bedwarslobby.proxyUtils.data.enums.ServerType;
 import me.dalynkaa.bedwarslobby.proxyUtils.data.player.TeamPlayer;
 
 import java.util.List;
@@ -17,8 +18,9 @@ public class GameRegistrator {
     private final GameStage gameStage;
     private final List<TeamPlayer> players;
     private final List<TeamPlayer> activePlayers;
+    private final ArenaTypes gameType;
 
-    public GameRegistrator(UUID serverID ,UUID gameId, String arenaName, boolean edit, GameStage gameStage, List<TeamPlayer> players, List<TeamPlayer> activePlayers) {
+    public GameRegistrator(UUID serverID, UUID gameId, String arenaName, boolean edit, GameStage gameStage, List<TeamPlayer> players, List<TeamPlayer> activePlayers, ArenaTypes gameType) {
         this.serverID = serverID;
         this.gameId = gameId;
         this.arenaName = arenaName;
@@ -26,6 +28,7 @@ public class GameRegistrator {
         this.gameStage = gameStage;
         this.players = players;
         this.activePlayers = activePlayers;
+        this.gameType = gameType;
     }
 
     public UUID getServerID() {
@@ -55,40 +58,49 @@ public class GameRegistrator {
     public List<TeamPlayer> getActivePlayers() {
         return activePlayers;
     }
-    public String toJson(){
+
+    public ArenaTypes getGameType() {
+        return gameType;
+    }
+
+    public String toJson() {
         Gson gson = new Gson();
         return gson.toJson(this);
     }
-    public static GameRegistrator fromJson(String json){
+
+    public static GameRegistrator fromJson(String json) {
         Gson gson = new Gson();
         return gson.fromJson(json, GameRegistrator.class);
     }
-    public static Integer getServerList(ArenaTypes arenaType){
+
+    public static Integer getServerList(ServerType serverType) {
         int servers = 0;
-        for (ServerRegistrator serverRegistrator: SPBedWarsLobby.getInstance().servers.values()){
-            if (serverRegistrator.getArenaType().equals(arenaType) && !serverRegistrator.getEdit()){
+        for (ServerRegistrator serverRegistrator : SPBedWarsLobby.getInstance().servers.values()) {
+            if (serverRegistrator.getServerType().equals(serverType) && !serverRegistrator.getEdit()) {
                 servers++;
             }
         }
         return servers;
     }
-    public static Integer getServerGamesList(ArenaTypes arenaType){
+
+    public static Integer getServerGamesList(ServerType serverType) {
         int games = 0;
-        for (ServerRegistrator serverRegistrator: SPBedWarsLobby.getInstance().servers.values()){
-            if (serverRegistrator.getArenaType().equals(arenaType) && !serverRegistrator.getEdit()){
-                if (serverRegistrator.getGames() != null){
-                    games+= serverRegistrator.getGames().size();
-                }else {
-                    games+=0;
+        for (ServerRegistrator serverRegistrator : SPBedWarsLobby.getInstance().servers.values()) {
+            if (serverRegistrator.getServerType().equals(serverType) && !serverRegistrator.getEdit()) {
+                if (serverRegistrator.getGames() != null) {
+                    games += serverRegistrator.getGames().size();
+                } else {
+                    games += 0;
                 }
             }
         }
         return games;
     }
-    public static Integer getServerPlayerList(ArenaTypes arenaType){
+
+    public static Integer getServerPlayerList(ServerType serverType) {
         int players = 0;
-        for (ServerRegistrator serverRegistrator: SPBedWarsLobby.getInstance().servers.values()){
-            if (serverRegistrator.getArenaType().equals(arenaType) && !serverRegistrator.getEdit()){
+        for (ServerRegistrator serverRegistrator : SPBedWarsLobby.getInstance().servers.values()) {
+            if (serverRegistrator.getServerType().equals(serverType) && !serverRegistrator.getEdit()) {
                 if (serverRegistrator.getGames() != null) {
                     for (GameRegistrator gameRegistrator : serverRegistrator.getGames()) {
                         if (gameRegistrator.getPlayers() != null) {
@@ -97,25 +109,28 @@ public class GameRegistrator {
                             players += 0;
                         }
                     }
-                }else {
-                    players+=0;
+                } else {
+                    players += 0;
                 }
             }
         }
         return players;
     }
-    public static GameRegistrator findSuitableGame(ArenaTypes arenaType) {
+
+    public static GameRegistrator findSuitableGame(ServerType serverType, ArenaTypes arenaType) {
         GameRegistrator suitableGame = null;
         for (ServerRegistrator server : SPBedWarsLobby.getInstance().servers.values()) {
-            if (server.getArenaType() == arenaType && server.getGames() != null && !server.getEdit()) {
+            if (server.getServerType() == serverType && server.getGames() != null && !server.getEdit()) {
                 for (GameRegistrator game : server.getGames()) {
-                    if (game.getGameStage() == GameStage.WAITING) {
-                        if (!game.getPlayers().isEmpty() && game.getPlayers().size() < arenaType.getPlayers()) {
-                            return game;
-                        } else if (suitableGame == null ||
-                                (suitableGame.getPlayers().size() < arenaType.getPlayers() &&
-                                        !game.getPlayers().isEmpty())) {
-                            suitableGame = game;
+                    if (game.getGameType() == arenaType) {
+                        if (game.getGameStage() == GameStage.WAITING) {
+                            if (!game.getPlayers().isEmpty() && game.getPlayers().size() < arenaType.getPlayers()) {
+                                return game;
+                            } else if (suitableGame == null ||
+                                    (suitableGame.getPlayers().size() < arenaType.getPlayers() &&
+                                            !game.getPlayers().isEmpty())) {
+                                suitableGame = game;
+                            }
                         }
                     }
                 }

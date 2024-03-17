@@ -15,6 +15,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import me.dalynkaa.spbedwars.SPBedWars;
 import me.dalynkaa.spbedwars.utils.config.ArenaConfig;
 import me.dalynkaa.spbedwars.utils.dataclasses.enums.ArenaTypes;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -43,7 +44,7 @@ public class GameArena implements ConfigurationSerializable {
     private Map<String, GameTeam> gameTeams;
 
 
-    public GameArena(UUID id, String arenaName, String schemName, World world ,boolean edit, ArenaTypes arenaType, GameLocation pos1, GameLocation pos2, GameLobby lobby, GameLocation spectatorLocation, List<GameShop> gameShops, List<GameSpawner> gameSpawners, Map<String, GameTeam> gameTeams) {
+    public GameArena(UUID id, String arenaName, String schemName, World world, boolean edit, ArenaTypes arenaType, GameLocation pos1, GameLocation pos2, GameLobby lobby, GameLocation spectatorLocation, List<GameShop> gameShops, List<GameSpawner> gameSpawners, Map<String, GameTeam> gameTeams) {
         this.id = id;
         this.arenaName = arenaName;
         this.schemName = schemName;
@@ -152,6 +153,24 @@ public class GameArena implements ConfigurationSerializable {
 
     public GameArena setWorld(World world) {
         this.world = world;
+        spectatorLocation.setWorld(world.getName());
+        lobby.getPos1().setWorld(world.getName());
+        lobby.getPos2().setWorld(world.getName());
+        lobby.getSpawn().setWorld(world.getName());
+        lobby.getPos1().setWorld(world.getName());
+        lobby.getPos2().setWorld(world.getName());
+        for (GameShop gameShop : gameShops) {
+            gameShop.getShopPosition().setWorld(world.getName());
+        }
+        for (GameSpawner gameSpawner : gameSpawners) {
+            gameSpawner.getLocation().setWorld(world.getName());
+        }
+        for (GameTeam gameTeam : gameTeams.values()) {
+            gameTeam.getSpawn().setWorld(world.getName());
+        }
+        for (GameTeam gameTeam : gameTeams.values()) {
+            gameTeam.getBedPos().getBedPos1().setWorld(world.getName());
+        }
         return this;
     }
 
@@ -182,11 +201,11 @@ public class GameArena implements ConfigurationSerializable {
         return this;
     }
 
-    public Map<String,GameTeam> getGameTeams() {
+    public Map<String, GameTeam> getGameTeams() {
         return gameTeams;
     }
 
-    public GameArena setGameTeams(Map<String,GameTeam> gameTeams) {
+    public GameArena setGameTeams(Map<String, GameTeam> gameTeams) {
         this.gameTeams = gameTeams;
         return this;
     }
@@ -200,37 +219,38 @@ public class GameArena implements ConfigurationSerializable {
         return this;
     }
 
-    public void save(){
+    public void save() {
         ArenaConfig arenaConfig = ArenaConfig.getArenaConfig(getId().toString());
         arenaConfig.getCustomConfig().set("arena", this);
         try {
             arenaConfig.saveCustomConfig();
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    public static GameArena getByID(UUID uuid){
-        if (uuid == null){
+
+    public static GameArena getByID(UUID uuid) {
+        if (uuid == null) {
             return null;
         }
-        if (ArenaConfig.hasArenaConfig(uuid.toString())){
+        if (ArenaConfig.hasArenaConfig(uuid.toString())) {
             ArenaConfig arenaConfig = ArenaConfig.getArenaConfig(uuid.toString());
             GameArena gameArena = (GameArena) arenaConfig.getCustomConfig().get("arena", GameArena.class);
             return gameArena;
         }
         return null;
     }
-    public void pasteSchem(){
-        File myfile = new File(SPBedWars.getInstance().getDataFolder().getAbsolutePath() + "/schem/"+getSchemName());
-        Clipboard clipboard;
 
+    public void pasteSchem(World world) {
+        File myfile = new File(SPBedWars.getInstance().getDataFolder().getAbsolutePath() + "/schem/" + getSchemName());
+        Clipboard clipboard;
         ClipboardFormat format = ClipboardFormats.findByFile(myfile);
         try (ClipboardReader reader = format.getReader(new FileInputStream(myfile))) {
             clipboard = reader.read();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(getWorld()))) {
+        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
             Operation operation = new ClipboardHolder(clipboard)
                     .createPaste(editSession)
                     .to(BlockVector3.at(0, 0, 0))
@@ -240,6 +260,21 @@ public class GameArena implements ConfigurationSerializable {
             throw new RuntimeException(e);
         }
     }
+
+    public void copyWorld(UUID gameId) {
+        File worldFolder = new File(SPBedWars.getInstance().getDataFolder().getAbsolutePath() + File.separator + "arenas" + File.separator + getId().toString() + File.separator + "{world}");
+        File newWorld = new File(gameId.toString());
+        try {
+            FileUtils.copyDirectory(worldFolder, newWorld);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        File uid = new File(newWorld, "uid.dat");
+        if (uid.exists()) {
+            uid.delete();
+        }
+    }
+
     @Override
     public @NotNull Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
@@ -258,6 +293,7 @@ public class GameArena implements ConfigurationSerializable {
         map.put("gameTeams", getGameTeams());
         return map;
     }
+
     public static GameArena deserialize(Map<String, Object> map) {
         UUID gameid1 = UUID.fromString((String) map.get("id"));
         String arenaName1 = (String) map.get("arenaName");
@@ -272,7 +308,7 @@ public class GameArena implements ConfigurationSerializable {
         List<GameShop> gameShopList = (List<GameShop>) map.get("gameShops");
         List<GameSpawner> gameSpawnerList = (List<GameSpawner>) map.get("gameSpawners");
         Map<String, GameTeam> gameTeamList = (Map<String, GameTeam>) map.get("gameTeams");
-        return new GameArena(gameid1,arenaName1, arenaSchem1,world1,edit,arenaType1,pos11,pos21,gameLobby1,spectatorLocation1,gameShopList,gameSpawnerList,gameTeamList);
+        return new GameArena(gameid1, arenaName1, arenaSchem1, world1, edit, arenaType1, pos11, pos21, gameLobby1, spectatorLocation1, gameShopList, gameSpawnerList, gameTeamList);
     }
 
     @Override

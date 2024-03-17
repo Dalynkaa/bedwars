@@ -7,6 +7,7 @@ import me.dalynkaa.spbedwars.utils.dataclasses.game.GameLocation;
 public class StoneGollem extends ArenaBoss {
     private CustomEntity entity;
     private Boolean isSummoned = false;
+
     @Override
     public String getName() {
         return "Голем";
@@ -50,6 +51,6 @@ public class StoneGollem extends ArenaBoss {
 
     @Override
     public void summon(GameLocation location) {
-        entity = CustomEntity.spawn( "bedwars:golem",location.getLocation());
+        entity = CustomEntity.spawn("bedwars:golem", location.getLocation());
     }
 }

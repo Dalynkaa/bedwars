@@ -17,31 +17,33 @@ import java.util.List;
 
 public class BlockListener implements Listener {
     List<Material> BED_BLOCKS;
-    public BlockListener(SPBedWars main){
+
+    public BlockListener(SPBedWars main) {
         main.getServer().getPluginManager().registerEvents(this, main);
         BED_BLOCKS = Arrays.asList(Material.RED_BED, Material.LIME_BED, Material.BLUE_BED, Material.YELLOW_BED);
     }
 
     @EventHandler
-    public void blockPlaceEvent(BlockPlaceEvent event){
+    public void blockPlaceEvent(BlockPlaceEvent event) {
         TeamPlayer player = BPlayer.getByUUID(event.getPlayer().getUniqueId()).getTeamPlayer();
         //TODO: check if block placed in arena box
         BWGame game = player.getGame();
-        if (game.getGameStage().equals(GameStage.RUNNING)){
+        if (game.getGameStage().equals(GameStage.RUNNING)) {
             player.placeBlock(event);
         }
 
     }
+
     @EventHandler
-    public void blockBreacEvent(BlockBreakEvent event){
+    public void blockBreacEvent(BlockBreakEvent event) {
         TeamPlayer player = BPlayer.getByUUID(event.getPlayer().getUniqueId()).getTeamPlayer();
         //TODO: check if block placed in arena box
         BWGame game = player.getGame();
-        if (game.getGameStage().equals(GameStage.RUNNING)){
-            if (BED_BLOCKS.contains(event.getBlock().getType())){
-                for (GameTeam team: game.getTeamsInGame()){
-                    if (team.getBedPos().getBedPos1().getLocation().getBlock().getType().equals(event.getBlock().getType())){
-                        if (player.getGameTeam().getTeam().equals(team.getTeam())){
+        if (game.getGameStage().equals(GameStage.RUNNING)) {
+            if (BED_BLOCKS.contains(event.getBlock().getType())) {
+                for (GameTeam team : game.getTeamsInGame()) {
+                    if (team.getBedPos().getBedPos1().getLocation().getBlock().getType().equals(event.getBlock().getType())) {
+                        if (player.getGameTeam().getTeam().equals(team.getTeam())) {
                             event.setCancelled(true);
                             return;
                         }

@@ -1,7 +1,7 @@
 server:
   id: 1
-  name: "BEDWARS_4X4_1"
-  type: SOLO
+  name: "BEDWARS_CLASSIC_1"
+  type: CLASSIC
 mariadb:
   ip: 127.0.0.1
   port: 3306

@@ -29,14 +29,14 @@ public class joinCommand extends GameSubCommand {
 
     @Override
     public void perform(Player player, String[] args) {
-        if (args.length != 2){
+        if (args.length != 2) {
             player.sendMessage("Неверное количество аргументов");
             return;
         }
         UUID gameId = UUID.fromString(args[0]);
         GameRegistrator gameRegistrator = null;
         ServerRegistrator server = null;
-        for (ServerRegistrator serverRegistrator: SPBedWarsLobby.getInstance().servers.values()) {
+        for (ServerRegistrator serverRegistrator : SPBedWarsLobby.getInstance().servers.values()) {
             for (GameRegistrator game : serverRegistrator.getGames()) {
                 if (game.getGameId().equals(gameId)) {
                     gameRegistrator = game;
@@ -44,20 +44,20 @@ public class joinCommand extends GameSubCommand {
                 }
             }
         }
-        if (gameRegistrator== null){
+        if (gameRegistrator == null) {
             player.sendMessage("Игра не найдена");
             return;
         }
-        if (gameRegistrator.getGameStage().equals(GameStage.RUNNING)||gameRegistrator.getGameStage().equals(GameStage.GAME_END_CELEBRATING)||gameRegistrator.getGameStage().equals(GameStage.REBUILDING)||gameRegistrator.getGameStage().equals(GameStage.DISABLED)||gameRegistrator.getGameStage().equals(GameStage.WAITING_TIMER)){
+        if (gameRegistrator.getGameStage().equals(GameStage.RUNNING) || gameRegistrator.getGameStage().equals(GameStage.GAME_END_CELEBRATING) || gameRegistrator.getGameStage().equals(GameStage.REBUILDING) || gameRegistrator.getGameStage().equals(GameStage.DISABLED) || gameRegistrator.getGameStage().equals(GameStage.WAITING_TIMER)) {
             player.sendMessage("Игра уже началась");
             return;
         }
-        if (gameRegistrator.getPlayers().size() >= server.getArenaType().getPlayers()){
+        if (gameRegistrator.getPlayers().size() >= gameRegistrator.getGameType().getPlayers()) {
             player.sendMessage("Игра заполнена");
             return;
         }
         BPlayer bPlayer = BPlayer.getByUUID(player.getUniqueId());
-        if (bPlayer == null){
+        if (bPlayer == null) {
             player.sendMessage("Ошибка");
             return;
         }

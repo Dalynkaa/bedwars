@@ -3,6 +3,7 @@ package me.dalynkaa.spbedwars.utils.dataclasses.game;
 import me.dalynkaa.spbedwars.utils.dataclasses.enums.ItemSpawner;
 import me.dalynkaa.spbedwars.utils.usableClasses.BlockHologram;
 import net.kyori.adventure.text.Component;
+import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+
 @SerializableAs("spawner")
 public class GameSpawner implements ConfigurationSerializable {
     private GameLocation location;
@@ -70,9 +72,9 @@ public class GameSpawner implements ConfigurationSerializable {
         return this;
     }
 
-    public void create(){
-        if (getType().equals(ItemSpawner.DIAMOND) || getType().equals(ItemSpawner.EMERALD)){
-            BlockHologram hologram1 = new BlockHologram(getLocation().getLocation().add(0.5,1.5, 0.5),
+    public void create() {
+        if (getType().equals(ItemSpawner.DIAMOND) || getType().equals(ItemSpawner.EMERALD)) {
+            BlockHologram hologram1 = new BlockHologram(getLocation().getLocation().add(0.5, 1.5, 0.5),
                     getType().getHologram(),
                     Component.text("Уровень ", getType().getMainCollor()).append(Component.text(1, getType().getSecondCollor())),
                     Component.text(getType().getName(), getType().getMainCollor()),
@@ -81,21 +83,23 @@ public class GameSpawner implements ConfigurationSerializable {
             setBlockHologram(hologram1);
         }
     }
-    public void despawn(){
-        if (getBlockHologram() != null){
+
+    public void despawn() {
+        if (getBlockHologram() != null) {
             getBlockHologram().despawn();
         }
     }
-    public void itemTick(){
+
+    public void itemTick(World world) {
         long currentTime = System.currentTimeMillis();
-        if (getType().equals(ItemSpawner.DIAMOND) || getType().equals(ItemSpawner.EMERALD)){
-            getBlockHologram().setSpawn(Component.text("До спавна ", getType().getMainCollor()).append(Component.text((((getLastSpawn()+getType().getSpawnCoolDown()*1000L) - currentTime)/1000)%60, getType().getSecondCollor())));
+        if (getType().equals(ItemSpawner.DIAMOND) || getType().equals(ItemSpawner.EMERALD)) {
+            getBlockHologram().setSpawn(Component.text("До спавна ", getType().getMainCollor()).append(Component.text((((getLastSpawn() + getType().getSpawnCoolDown() * 1000L) - currentTime) / 1000) % 60, getType().getSecondCollor())));
         }
-        if (currentTime<getLastSpawn()+getType().getSpawnCoolDown()*1000L){
+        if (currentTime < getLastSpawn() + getType().getSpawnCoolDown() * 1000L) {
             return;
         }
         setLastSpawn(currentTime);
-        getLocation().getWorld().dropItem(getLocation().getLocation().add(0.5,0,0.5), new ItemStack(getType().getItem()));
+        world.dropItem(getLocation().getLocation().add(0.5, 0, 0.5), new ItemStack(getType().getItem()));
     }
 
     @Override
@@ -106,6 +110,7 @@ public class GameSpawner implements ConfigurationSerializable {
         map.put("hologram", isHologram());
         return map;
     }
+
     public static GameSpawner deserialize(Map<String, Object> map) {
         GameLocation gameLocation = (GameLocation) map.get("location");
         String type1 = (String) map.get("type");

@@ -1,6 +1,7 @@
 package me.dalynkaa.spbedwars.utils.dataclasses.game.teams;
 
 import me.dalynkaa.spbedwars.utils.PlayerUtils;
+import me.dalynkaa.spbedwars.utils.dataclasses.game.BWGame;
 import me.dalynkaa.spbedwars.utils.dataclasses.game.GameLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -56,7 +57,8 @@ public class TeamBed implements ConfigurationSerializable {
         this.color = color;
         return this;
     }
-    public void destroy(){
+
+    public void destroy(BWGame game) {
         getBedPos1().getLocation().getBlock().setType(Material.AIR);
         getBedPos1().getLocation().getBlock().getRelative(getFace()).setType(Material.AIR);
     }
@@ -69,32 +71,36 @@ public class TeamBed implements ConfigurationSerializable {
         map.put("color", getColor().name());
         return map;
     }
+
     public static TeamBed deserialize(Map<String, Object> map) {
         GameLocation bedPos1 = (GameLocation) map.get("pos1");
         BlockFace b_face = BlockFace.valueOf((String) map.get("face"));
         DyeColor b_color = DyeColor.valueOf((String) map.get("color"));
         return new TeamBed(bedPos1, b_face, b_color);
     }
+
     public static boolean isBed(Material material) {
         return material == Material.RED_BED || material == Material.BLUE_BED || material == Material.LIME_BED || material == Material.YELLOW_BED;
     }
-    public void setBedBlock(Player player){
+
+    public void setBedBlock(Player player) {
         Block block = getBedPos1().getLocation().getBlock();
         BlockState bedFoot = block.getState();
         BlockState bedHead = bedFoot.getBlock().getRelative(PlayerUtils.getBlockFace(player)).getState();
-        BlockData bedHeadData = Bukkit.getServer().createBlockData("minecraft:"+getColor().name().toLowerCase()+"_bed[facing="+ getFace().name().toLowerCase() +",occupied=false,part=head]");
-        BlockData bedFootData = Bukkit.getServer().createBlockData("minecraft:"+getColor().name().toLowerCase()+"_bed[facing="+ getFace().name().toLowerCase() +",occupied=false,part=foot]");
+        BlockData bedHeadData = Bukkit.getServer().createBlockData("minecraft:" + getColor().name().toLowerCase() + "_bed[facing=" + getFace().name().toLowerCase() + ",occupied=false,part=head]");
+        BlockData bedFootData = Bukkit.getServer().createBlockData("minecraft:" + getColor().name().toLowerCase() + "_bed[facing=" + getFace().name().toLowerCase() + ",occupied=false,part=foot]");
         bedFoot.setBlockData(bedFootData);
         bedHead.setBlockData(bedHeadData);
         bedFoot.update(true, false);
         bedHead.update(true, true);
     }
-    public void setBedBlock(){
+
+    public void setBedBlock() {
         Block block = getBedPos1().getLocation().getBlock();
         BlockState bedFoot = block.getState();
         BlockState bedHead = bedFoot.getBlock().getRelative(getFace()).getState();
-        BlockData bedHeadData = Bukkit.getServer().createBlockData("minecraft:"+getColor().name().toLowerCase()+"_bed[facing="+ getFace().name().toLowerCase() +",occupied=false,part=head]");
-        BlockData bedFootData = Bukkit.getServer().createBlockData("minecraft:"+getColor().name().toLowerCase()+"_bed[facing="+ getFace().name().toLowerCase() +",occupied=false,part=foot]");
+        BlockData bedHeadData = Bukkit.getServer().createBlockData("minecraft:" + getColor().name().toLowerCase() + "_bed[facing=" + getFace().name().toLowerCase() + ",occupied=false,part=head]");
+        BlockData bedFootData = Bukkit.getServer().createBlockData("minecraft:" + getColor().name().toLowerCase() + "_bed[facing=" + getFace().name().toLowerCase() + ",occupied=false,part=foot]");
         bedFoot.setBlockData(bedFootData);
         bedHead.setBlockData(bedHeadData);
         bedFoot.update(true, false);

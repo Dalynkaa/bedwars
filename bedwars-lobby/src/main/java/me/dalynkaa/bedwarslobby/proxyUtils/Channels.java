@@ -11,7 +11,10 @@ public enum Channels {
     GAME_UPDATE("spbedwars:game_update"),
     GAMES_LIST("spbedwars:games_list"),
     GAME_REGISTRATION_REQUEST("spbedwars:game_registration_request"),
-    GAME_JOIN("spbedwars:game_join");
+    GAME_JOIN("spbedwars:game_join"),
+    GAME_JOIN_REQUEST("spbedwars:game_join_request"),
+    ARENA_REGISTRATION("spbedwars:arena_registration"),
+    ARENA_UNREGISTRATION("spbedwars:arena_unregistration");
 
     private final String channel;
 

@@ -26,12 +26,12 @@ public class InfoCommand extends ServerSubCommand {
 
     @Override
     public void perform(Player player, String[] args) {
-        if (args.length != 2){
+        if (args.length != 2) {
             player.sendMessage("Неверное количество аргументов");
             return;
         }
         UUID serverId = UUID.fromString(args[0]);
-        if (!SPBedWarsLobby.getInstance().servers.containsKey(serverId)){
+        if (!SPBedWarsLobby.getInstance().servers.containsKey(serverId)) {
             player.sendMessage("Сервер не найден");
             return;
         }
@@ -39,10 +39,10 @@ public class InfoCommand extends ServerSubCommand {
         player.sendMessage("--------------info----------------");
         player.sendMessage("ServerId: " + server.getServerId());
         player.sendMessage("ServerName: " + server.getServerName());
-        player.sendMessage("ArenaType: " + server.getArenaType());
-        if (server.getGames() != null){
+        player.sendMessage("ArenaType: " + server.getServerType());
+        if (server.getGames() != null) {
             player.sendMessage("Games: " + server.getGames().size());
-        }else{
+        } else {
             player.sendMessage("Games: 0");
         }
         player.sendMessage("IsEdit: " + server.getEdit());

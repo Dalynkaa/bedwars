@@ -2,7 +2,7 @@ package me.dalynkaa.spbedwars.commands.arenacommand.subcommands;
 
 import me.dalynkaa.spbedwars.SPBedWars;
 import me.dalynkaa.spbedwars.commands.arenacommand.ArenaSubCommand;
-import me.dalynkaa.spbedwars.utils.config.Config;
+import me.dalynkaa.spbedwars.utils.Logger;
 import me.dalynkaa.spbedwars.utils.dataclasses.another.ArenaCreation;
 import me.dalynkaa.spbedwars.utils.dataclasses.enums.ArenaTypes;
 import me.dalynkaa.spbedwars.utils.dataclasses.enums.MessageType;
@@ -38,6 +38,10 @@ public class createCommand extends ArenaSubCommand {
     @Override
     public void perform(Player player, String[] args) {
         BPlayer bPlayer = BPlayer.getByUUID(player.getUniqueId());
+        if (bPlayer == null) {
+            player.sendMessage("Ошибка при получении данных игрока");
+            return;
+        }
         if (args.length < 4) {
             bPlayer.sendMessage(Component.text("Недостатосно аргументов!"), MessageType.ERROR);
             return;
@@ -50,7 +54,7 @@ public class createCommand extends ArenaSubCommand {
         World world = createWorld(uuid);
         player.teleport(new Location(world, 0, 1, 0));
         GameArena gameArena = new GameArena(uuid, arenaName, schemName, world, arenaTypes);
-        gameArena.pasteSchem();
+        gameArena.pasteSchem(world);
         gameArena.save();
         bPlayer.sendMessage(Component.text("Арена создана!"), MessageType.SUCCESS);
         bPlayer.setEditArena(gameArena.getId());
@@ -62,14 +66,15 @@ public class createCommand extends ArenaSubCommand {
     @Override
     public List<String> getSubcommandArguments(Player player, String[] args) {
         if (args.length == 2) {
-            return Arrays.asList("<имя_арены>");
+            return List.of("<имя_арены>");
         } else if (args.length == 3) {
             List<String> result = new ArrayList<>();
-            result.add(Config.getServerType().name());
+            for (ArenaTypes value : ArenaTypes.values()) {
+                result.add(value.toString());
+            }
             return result;
         } else if (args.length == 4) {
-            List<String> result = getAllArenasSchems();
-            return result;
+            return getAllArenasSchems();
         }
         return null;
     }
@@ -81,11 +86,19 @@ public class createCommand extends ArenaSubCommand {
         wc.generateStructures(false);
         wc.generatorSettings("{\"layers\": [{\"block\": \"air\", \"height\": 1}], \"biome\":\"plains\"}");
         World world = wc.createWorld();
+        if (world == null) {
+            Logger.error("Error while creating world");
+            return null;
+        }
         world.setDifficulty(Difficulty.PEACEFUL);
         world.setGameRule(GameRule.MOB_GRIEFING, false);
         world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
         world.setGameRule(GameRule.KEEP_INVENTORY, true);
         world.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+        world.setGameRule(GameRule.DO_MOB_LOOT, false);
         Location location = new Location(world, 0, 0, 0);
         location.getBlock().setType(Material.STONE);
         return world;
@@ -93,7 +106,12 @@ public class createCommand extends ArenaSubCommand {
 
     public static List<String> getAllArenasSchems() {
         File dir = new File(SPBedWars.getInstance().getDataFolder().getPath(), "schem");
-        List<String> schems = Arrays.stream(dir.list()).toList();
-        return Arrays.stream(dir.list()).toList();
+        if (dir.exists() && dir.list() != null) {
+            String[] list = dir.list();
+            if (list != null) {
+                return Arrays.stream(list).toList();
+            }
+        }
+        return new ArrayList<>();
     }
 }

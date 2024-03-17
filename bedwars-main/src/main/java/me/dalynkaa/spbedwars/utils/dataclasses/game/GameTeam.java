@@ -150,8 +150,8 @@ public class GameTeam implements ConfigurationSerializable {
             teamPlayer.sendMessage("Ваша кровать сломана", MessageType.ERROR);
             teamPlayer.getPlayer().playEffect(EntityEffect.TOTEM_RESURRECT);
         }
-        getBedPos().destroy();
-        getSpawn().getWorld().getEntitiesByClass(Item.class).forEach((item -> {
+        getBedPos().destroy(game);
+        game.getWorld().getEntitiesByClass(Item.class).forEach((item -> {
             if (TeamBed.isBed(item.getItemStack().getType())) {
                 item.remove();
             }

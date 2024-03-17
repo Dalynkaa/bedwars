@@ -7,6 +7,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import me.dalynkaa.spbedwars.SPBedWars;
 import me.dalynkaa.spbedwars.infoServices.scoreboard.ScoreboardInit;
+import me.dalynkaa.spbedwars.utils.Logger;
 import me.dalynkaa.spbedwars.utils.config.ArenaConfig;
 import me.dalynkaa.spbedwars.utils.config.Config;
 import me.dalynkaa.spbedwars.utils.dataclasses.enums.MessageType;
@@ -22,6 +23,7 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.*;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -72,6 +74,10 @@ public class BWGame {
 
     public List<GameTeam> getTeamsInGame() {
         return teamsInGame;
+    }
+
+    public World getWorld() {
+        return Bukkit.getWorld(gameId);
     }
 
 
@@ -232,7 +238,7 @@ public class BWGame {
         for (TeamPlayer teamPlayer : getPlayers()) {
             teamPlayer.spawn();
         }
-        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(getArena().getWorld()))) {
+        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(getWorld()))) {
             CuboidRegion cuboidRegion = new CuboidRegion(getArena().getLobby().getPos1().getBlockVector3(), getArena().getLobby().getPos2().getBlockVector3());
             editSession.setBlocks(cuboidRegion, BukkitAdapter.adapt(Material.AIR.createBlockData()));
         } catch (WorldEditException e) {
@@ -258,16 +264,18 @@ public class BWGame {
             for (TeamPlayer teamPlayer1 : getPlayers()) {
                 teamPlayer1.sendToLobby();
             }
-            createNewGame().clearArena();
+            removeCurrentGame();
         });
-
-
     }
 
     public void clearArena() {
+        clearArena(getWorld());
+    }
+
+    public void clearArena(World world) {
         setGameStage(GameStage.REBUILDING);
-        getArena().pasteSchem();
-        List<Entity> entList = getArena().getWorld().getEntities();
+        getArena().pasteSchem(world);
+        List<Entity> entList = world.getEntities();
         for (Entity current : entList) {
             if (current instanceof Item) {
                 current.remove();
@@ -296,14 +304,23 @@ public class BWGame {
         setGameStage(GameStage.WAITING);
     }
 
-    public BWGame createNewGame() {
+
+    public void removeCurrentGame() {
+        World world = getWorld();
+        if (world == null) {
+            Logger.error("World is null");
+            return;
+        }
+        Bukkit.unloadWorld(world, false);
         SPBedWars.getInstance().activeGames.remove(getGameId());
-        UUID arenaId = UUID.randomUUID();
-        BWGame game = new BWGame(arenaId, arena, GameStage.WAITING);
-        SPBedWars.getInstance().activeGames.put(arenaId, game);
-        World world = new WorldCreator(arena.getId().toString()).createWorld();
-        SPBedWars.getInstance().proxyUtils.registerGame(game);
-        return game;
+        SPBedWars.getInstance().proxyUtils.unregisterGame(getGameId());
+        if (SPBedWars.getInstance().editsGames.containsKey(getGameId())) {
+            SPBedWars.getInstance().editsGames.remove(getGameId());
+        }
+        File worldFile = new File(getGameId().toString());
+        if (worldFile.exists()) {
+            worldFile.delete();
+        }
 
     }
 
@@ -334,9 +351,22 @@ public class BWGame {
         }
     }
 
+    public static BWGame createNewGame(UUID arenaId) {
+        GameArena arena = GameArena.getByID(arenaId);
+        UUID gameId = UUID.randomUUID();
+        arena.copyWorld(gameId);
+        BWGame game = new BWGame(gameId, arena, GameStage.WAITING);
+        SPBedWars.getInstance().activeGames.put(gameId, game);
+        World world = new WorldCreator(gameId.toString()).createWorld();
+        game.getArena().setWorld(world);
+        game.clearArena(world);
+        SPBedWars.getInstance().proxyUtils.registerGame(game);
+        return game;
+    }
+
     public static BWGame getGameByWorld(World world) {
         for (BWGame game : SPBedWars.getInstance().activeGames.values()) {
-            if (game.getArena().getWorld().equals(world)) {
+            if (game.getWorld().equals(world)) {
                 return game;
             }
         }

@@ -2,10 +2,7 @@ package me.dalynkaa.bedwarslobby.proxyUtils;
 
 import me.dalynkaa.bedwarslobby.SPBedWarsLobby;
 import me.dalynkaa.bedwarslobby.proxyUtils.data.player.BPlayer;
-import me.dalynkaa.bedwarslobby.proxyUtils.data.registrators.GameJoinRegistrator;
-import me.dalynkaa.bedwarslobby.proxyUtils.data.registrators.GameRegistrator;
-import me.dalynkaa.bedwarslobby.proxyUtils.data.registrators.ServerEditRegistrator;
-import me.dalynkaa.bedwarslobby.proxyUtils.data.registrators.ServerRegistrator;
+import me.dalynkaa.bedwarslobby.proxyUtils.data.registrators.*;
 import me.dalynkaa.bedwarslobby.utils.Logger;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
@@ -26,8 +23,8 @@ public class ProxyUtils {
                 spBedWars.getConfig().getString("redis.password", "")
         );
         //keepRedisConnectionAlive();
-        requerstServerRegistration();
         subscribe();
+        requerstServerRegistration();
     }
 
     public void subscribe() {
@@ -40,9 +37,12 @@ public class ProxyUtils {
                         Channels.SERVER_REGISTRATION.getChannel(),
                         Channels.GAME_REGISTRATION.getChannel(),
                         Channels.GAME_JOIN.getChannel(),
+                        Channels.GAME_JOIN_REQUEST.getChannel(),
                         Channels.GAME_UPDATE.getChannel(),
                         Channels.SERVER_UNREGISTRATION.getChannel(),
-                        Channels.GAME_UNREGISTRATION.getChannel());
+                        Channels.GAME_UNREGISTRATION.getChannel(),
+                        Channels.ARENA_REGISTRATION.getChannel(),
+                        Channels.ARENA_UNREGISTRATION.getChannel());
             } catch (JedisConnectionException e) {
                 Logger.debug("Redis connection error");
                 if (subscriberJedis != null) {
@@ -84,6 +84,13 @@ public class ProxyUtils {
         returnRes(jedis);
     }
 
+    public void requestGameCreation(UUID arenaId, UUID serverId, BPlayer bPlayer) {
+        Jedis jedis = redisConnection.getJedis();
+        GameJoinRegistrator gameJoinRegistrator = new GameJoinRegistrator(bPlayer.getUuid(), arenaId, serverId, GameJoinRegistrator.JoinType.CREATE);
+        jedis.publish(Channels.GAME_JOIN.getChannel(), gameJoinRegistrator.toJson());
+        returnRes(jedis);
+    }
+
     public void setServerEdit(UUID serverId, boolean edit) {
         Jedis jedis = redisConnection.getJedis();
         jedis.publish(Channels.SERVER_EDIT.getChannel(), new ServerEditRegistrator(serverId, edit).toJson());
@@ -104,6 +111,10 @@ public class ProxyUtils {
                 ServerRegistrator serverRegistrator = ServerRegistrator.fromJson(message);
                 Logger.info(ServerRegistrator.fromJson(message).getServerName() + " registered");
                 spBedWars.servers.put(serverRegistrator.getServerId(), serverRegistrator);
+            } else if (channel.equals(Channels.ARENA_REGISTRATION.getChannel())) {
+                ArenaRegistrator arenaRegistrator = ArenaRegistrator.fromJson(message);
+                Logger.info("Arena " + arenaRegistrator.getArenaName() + " registered");
+                spBedWars.arenas.add(arenaRegistrator);
             } else if (channel.equals(Channels.SERVER_UNREGISTRATION.getChannel())) {
                 Logger.info(SPBedWarsLobby.getInstance().servers.get(UUID.fromString(message)).getServerName() + " unregistered");
                 spBedWars.servers.remove(UUID.fromString(message));
@@ -130,6 +141,23 @@ public class ProxyUtils {
                     if (spBedWars.servers.get(serverId).getGames() != null) {
                         spBedWars.servers.get(serverId).updateGame(gameRegistrator);
                     }
+                }
+            } else if (channel.equals(Channels.ARENA_UNREGISTRATION.getChannel())) {
+                UUID serverId = UUID.fromString(message);
+                for (ArenaRegistrator arena : spBedWars.arenas) {
+                    if (arena.getServerId().equals(serverId)) {
+                        Logger.info("Arena " + arena.getArenaName() + " unregistered");
+                        spBedWars.arenas.remove(arena);
+                        break;
+                    }
+                }
+            } else if (channel.equals(Channels.GAME_JOIN_REQUEST.getChannel())) {
+                String[] args = message.split(":");
+                UUID playerId = UUID.fromString(args[0]);
+                String serverName = args[1];
+                BPlayer bPlayer = BPlayer.getByUUID(playerId);
+                if (bPlayer != null) {
+                    bPlayer.sendServer(serverName);
                 }
             }
         }

@@ -2,7 +2,6 @@ package me.dalynkaa.spbedwars.utils.dataclasses.game;
 
 import com.google.gson.Gson;
 import com.sk89q.worldedit.math.BlockVector3;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -18,7 +17,7 @@ public class GameLocation implements ConfigurationSerializable {
     private Integer x;
     private Integer y;
     private Integer z;
-    private final String world;
+    private String world;
 
     public GameLocation(Integer x, Integer y, Integer z, String world) {
         this.x = x;
@@ -31,16 +30,19 @@ public class GameLocation implements ConfigurationSerializable {
         this.x = x;
         return this;
     }
-    public GameLocation addX(Integer x1){
-        this.x = this.x+x1;
+
+    public GameLocation addX(Integer x1) {
+        this.x = this.x + x1;
         return this;
     }
-    public GameLocation addY(Integer y1){
-        this.y = this.y+y1;
+
+    public GameLocation addY(Integer y1) {
+        this.y = this.y + y1;
         return this;
     }
-    public GameLocation addZ(Integer z1){
-        this.z = this.z+z1;
+
+    public GameLocation addZ(Integer z1) {
+        this.z = this.z + z1;
         return this;
     }
 
@@ -52,6 +54,15 @@ public class GameLocation implements ConfigurationSerializable {
     public GameLocation setZ(Integer z) {
         this.z = z;
         return this;
+    }
+
+    public GameLocation setWorld(String world) {
+        this.world = world;
+        return this;
+    }
+
+    public World getWorld() {
+        return org.bukkit.Bukkit.getWorld(world);
     }
 
     public Integer getX() {
@@ -69,24 +80,27 @@ public class GameLocation implements ConfigurationSerializable {
     public String getWorldName() {
         return world;
     }
-    public World getWorld(){
-        return Bukkit.getWorld(getWorldName());
+
+
+    public Location getLocation() {
+        return new Location(getWorld(), getX(), getY(), getZ());
     }
-    public Location getLocation(){
-        return new Location(getWorld(),getX(),getY(),getZ());
-    }
-    public static GameLocation fromLocation(Location location){
+
+    public static GameLocation fromLocation(Location location) {
         return new GameLocation(location.getBlockX(), location.getBlockY(), location.getBlockZ(), location.getWorld().getName());
     }
-    public BlockVector3 getBlockVector3(){
-        return BlockVector3.at(getX(),getY(),getZ());
+
+    public BlockVector3 getBlockVector3() {
+        return BlockVector3.at(getX(), getY(), getZ());
     }
-    public String toJson(){
+
+    public String toJson() {
         Gson gson = new Gson();
         String json = gson.toJson(this);
         return json;
     }
-    public static GameLocation fromJson(String data){
+
+    public static GameLocation fromJson(String data) {
         Gson gson = new Gson();
         GameLocation json = gson.fromJson(data, GameLocation.class);
         return json;
@@ -97,12 +111,12 @@ public class GameLocation implements ConfigurationSerializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GameLocation that = (GameLocation) o;
-        return Objects.equals(getX(), that.getX()) && Objects.equals(getY(), that.getY()) && Objects.equals(getZ(), that.getZ()) && Objects.equals(getWorld(), that.getWorld());
+        return Objects.equals(getX(), that.getX()) && Objects.equals(getY(), that.getY()) && Objects.equals(getZ(), that.getZ());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getX(), getY(), getZ(), getWorld());
+        return Objects.hash(getX(), getY(), getZ());
     }
 
     @Override
@@ -124,12 +138,13 @@ public class GameLocation implements ConfigurationSerializable {
         map.put("world", getWorldName());
         return map;
     }
+
     public static GameLocation deserialize(Map<String, Object> map) {
         int XPos = (int) map.get("x");
         int YPos = (int) map.get("y");
         int ZPos = (int) map.get("z");
         String worldName = (String) map.get("world");
-        return new GameLocation(XPos,YPos,ZPos,worldName);
+        return new GameLocation(XPos, YPos, ZPos, worldName);
     }
 
 }
