@@ -1,0 +1,25 @@
+name: SPBedWarsLobby
+version: '${project.version}'
+main: me.dalynkaa.bedwarslobby.SPBedWarsLobby
+api-version: '1.20'
+depend:
+  - PlasmoVoice
+softdepend:
+  - BedWarsMusic
+commands:
+  gameServers:
+    description: "Server commands"
+    usage: "/server <id>"
+    aliases: [ servers, s ]
+  game:
+    description: "Game commands"
+    usage: "/game <id>"
+    aliases: [ g ]
+  menu:
+    description: "Menu commands"
+    usage: "/menu"
+    aliases: [ m ]
+  settings:
+    description: "Settings commands"
+    usage: "/settings"
+    aliases: [ set ]

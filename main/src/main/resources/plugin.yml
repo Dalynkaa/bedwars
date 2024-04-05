@@ -1,0 +1,28 @@
+name: SPBedWars
+version: '1.0.0'
+main: me.dalynkaa.spbedwars.SPBedWars
+api-version: 1.19
+load: POSTWORLD
+depend:
+  - ProtocolLib
+  - PlayerNPC
+  - PlasmoVoice
+  - pv-addon-lavaplayer-lib
+  - BedWarsMusic
+softdepend:
+  - PlayerNPC
+  - Citizens
+  - PlaceholderAPI
+  - Vault
+  - WorldEdit
+  - WorldGuard
+commands:
+  arena:
+    description: this command use for create arenas
+  game:
+    description: this command use for manage games
+  bedwars:
+    description: this command use for manage plugin
+    aliases:
+      - bw
+      - bwars
