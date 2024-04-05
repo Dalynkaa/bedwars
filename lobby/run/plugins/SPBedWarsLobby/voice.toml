@@ -1,0 +1,4 @@
+source_line_weight = 10
+# The default volume. Volume is configured on the client side
+# and can be adjusted via the mod settings.
+default_source_line_volume = 0.5

@@ -1,0 +1,14 @@
+mariadb:
+  ip: 127.0.0.1
+  port: 3306
+  user: bedwars
+  password: RGEdYHlS8Wf@1rOU
+  database: bedwars
+spawnLocation:
+  ==: org.bukkit.Location
+  world: world
+  x: 16.446819353140782
+  y: 193.0
+  z: -808.5598424835721
+  pitch: 2.7000217
+  yaw: 179.26468

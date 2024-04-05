@@ -1,6 +1,0 @@
-mariadb:
-  ip: 127.0.0.1
-  port: 3306
-  user: "bedwars"
-  password: "RGEdYHlS8Wf@1rOU"
-  database: "bedwars"

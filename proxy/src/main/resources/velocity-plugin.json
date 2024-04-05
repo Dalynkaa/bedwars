@@ -1,0 +1,10 @@
+{
+  "id": "bedwarsproxy",
+  "name": "BedwarsProxy",
+  "version": "1.0.0-SNAPSHOT",
+  "authors": [
+    "Dalynkaa"
+  ],
+  "dependencies": [],
+  "main": "me.dalynkaa.bedwarsproxy.SpBedWartProxy"
+}

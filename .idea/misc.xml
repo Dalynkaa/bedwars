@@ -6,15 +6,20 @@
       <item index="1" class="java.lang.String" itemvalue="com.velocitypowered.api.event.Subscribe" />
       <item index="2" class="java.lang.String" itemvalue="com.velocitypowered.api.plugin.Plugin" />
     </list>
+    <writeAnnotations>
+      <writeAnnotation name="su.plo.config.ConfigField" />
+    </writeAnnotations>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$" />
+  </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
       </list>
     </option>
-    <option name="workspaceImportForciblyTurnedOn" value="true" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="liberica-17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
