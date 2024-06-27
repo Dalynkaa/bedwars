@@ -44,6 +44,6 @@ public class GameJoinRegistrator {
     }
 
     public enum JoinType {
-        JOIN, SPEC
+        JOIN, SPEC, EDIT
     }
 }

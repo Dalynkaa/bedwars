@@ -23,6 +23,10 @@ allprojects {
 
     repositories {
         mavenCentral()
+        maven {
+            name = "CodeMC"
+            url = uri("https://repo.codemc.io/repository/maven-public/")
+        }
         maven("https://repo.dalynkaa.me/repository/maven-snapshots/")
         maven { url = uri("https://nexus.iridiumdevelopment.net/repository/maven-releases/") }
         maven { url = uri("https://repo.plasmoverse.com/releases") }

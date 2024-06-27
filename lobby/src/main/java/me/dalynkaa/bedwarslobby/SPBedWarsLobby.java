@@ -55,10 +55,12 @@ public final class SPBedWarsLobby extends JavaPlugin {
         }
         //events
         new JoinListener(this);
-        new JumpPadListener(this);
+        new MarkerEnterListener(this);
         new DamageCanseller(this);
         new GuiItemsInteract(this);
         new InventoryClickEvent(this);
+        new JumpPadListener(this);
+        new RestrictedActionsListener(this);
     }
 
     @Override

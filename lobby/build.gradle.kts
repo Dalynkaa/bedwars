@@ -1,11 +1,11 @@
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("de.tr7zw:item-nbt-api-plugin:2.13.1")
     implementation("dev.triumphteam:triumph-gui:3.1.5")
     compileOnly("me.clip:placeholderapi:2.11.2")
     implementation("net.wesjd:anvilgui:1.6.3-SNAPSHOT")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.1.3")
     implementation("redis.clients:jedis:5.0.1")
-    compileOnly("me.lucko:helper:5.6.14")
     compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT") {
         exclude(group = "*", module = "*")
     }

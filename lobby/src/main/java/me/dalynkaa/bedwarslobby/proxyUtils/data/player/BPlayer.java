@@ -2,6 +2,8 @@ package me.dalynkaa.bedwarslobby.proxyUtils.data.player;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.gson.Gson;
+import de.tr7zw.nbtapi.NBT;
 import me.dalynkaa.bedwarslobby.SPBedWarsLobby;
 import me.dalynkaa.bedwarslobby.gameMenus.gameselect.GameSelectMenu;
 import me.dalynkaa.bedwarslobby.proxyUtils.data.enums.ArenaTypes;
@@ -14,6 +16,7 @@ import me.dalynkaa.bedwarslobby.proxyUtils.data.registrators.ServerRegistrator;
 import me.dalynkaa.bedwarslobby.proxyUtils.data.registrators.game.GameJoinRegistrator;
 import me.dalynkaa.bedwarslobby.proxyUtils.data.registrators.game.GameRegistrator;
 import me.dalynkaa.bedwarslobby.utils.UUIDUtils;
+import me.dalynkaa.bedwarslobby.utils.dtos.markers.MarkerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -22,7 +25,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static me.dalynkaa.bedwarslobby.proxyUtils.data.registrators.game.GameRegistrator.findSuitableGame;
 
@@ -66,6 +72,20 @@ public class BPlayer {
 
     public UUID getEditArena() {
         return editArena;
+    }
+
+    public List<MarkerData> getMarkersList() {
+        Gson gson = new Gson();
+        // Получаем текущие маркеры игрока из NBT
+        String currentMarkersJson = NBT.getPersistentData(getPlayer(), nbt -> {
+            return nbt.getString("currentMarkers");
+        });
+        List<String> currentMarkers = gson.fromJson(currentMarkersJson, List.class);
+
+        if (currentMarkers == null) {
+            currentMarkers = new ArrayList<>();
+        }
+        return currentMarkers.stream().map(MarkerData::getById).collect(Collectors.toList());
     }
 
     public void setEditArena(UUID editArena) {
@@ -117,7 +137,7 @@ public class BPlayer {
         }
     }
 
-    public TeamPlayer joinGame(GameRegistrator game) {
+    public void joinGame(GameRegistrator game) {
         if (game == null) {
             throw new IllegalArgumentException("Game must be not null");
         }
@@ -129,8 +149,16 @@ public class BPlayer {
         save();
         SPBedWarsLobby.getInstance().getProxyUtils().requestGameJoin(game, this, GameJoinRegistrator.JoinType.JOIN);
         //sendServer(SPBedWarsLobby.getInstance().servers.get(game.getServerID()).getServerName());
-        return teamPlayer;
     }
+
+    public void joinServer(UUID serverID) {
+        if (serverID == null) {
+            throw new IllegalArgumentException("ServerId must be not null");
+        }
+        SPBedWarsLobby.getInstance().getProxyUtils().requestServerJoin(null, this, GameJoinRegistrator.JoinType.EDIT);
+        //sendServer(SPBedWarsLobby.getInstance().servers.get(game.getServerID()).getServerName());
+    }
+
 
     public TeamPlayer specGame(GameRegistrator game) {
         if (game == null) {

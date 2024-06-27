@@ -2,6 +2,8 @@ package me.dalynkaa.bedwarslobby.commands.serverCommand.subcommands;
 
 import me.dalynkaa.bedwarslobby.SPBedWarsLobby;
 import me.dalynkaa.bedwarslobby.commands.serverCommand.ServerSubCommand;
+import me.dalynkaa.bedwarslobby.proxyUtils.data.enums.MessageType;
+import me.dalynkaa.bedwarslobby.proxyUtils.data.player.BPlayer;
 import me.dalynkaa.bedwarslobby.proxyUtils.data.registrators.ServerRegistrator;
 import org.bukkit.entity.Player;
 
@@ -26,13 +28,18 @@ public class EditCommand extends ServerSubCommand {
 
     @Override
     public void perform(Player player, String[] args) {
-        if (args.length != 3){
-            player.sendMessage("Неверное количество аргументов");
+        BPlayer bPlayer = BPlayer.getByUUID(player.getUniqueId());
+        if (bPlayer == null) {
+            player.sendMessage("Произошла ошибка. Попробуйте позже");
+            return;
+        }
+        if (args.length != 3) {
+            bPlayer.sendMessage("Неверное количество аргументов", MessageType.ERROR);
             return;
         }
         boolean edit = Boolean.parseBoolean(args[2]);
         UUID serverId = UUID.fromString(args[0]);
-        if (!SPBedWarsLobby.getInstance().servers.containsKey(serverId)){
+        if (!SPBedWarsLobby.getInstance().servers.containsKey(serverId)) {
             player.sendMessage("Сервер не найден");
             return;
         }
@@ -40,11 +47,14 @@ public class EditCommand extends ServerSubCommand {
         server.setEdit(edit);
         SPBedWarsLobby.getInstance().getProxyUtils().setServerEdit(serverId, edit);
         player.sendMessage("Режим редактирования сервера " + serverId + " установлен на " + edit);
+        if (edit) {
+            bPlayer.joinServer(server.getServerId());
+        }
     }
 
     @Override
     public List<String> getSubcommandArguments(Player player, String[] args) {
-        if (args.length == 3){
+        if (args.length == 3) {
             return List.of("true", "false");
         }
         return null;

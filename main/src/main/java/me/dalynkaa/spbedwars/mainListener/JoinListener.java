@@ -32,6 +32,10 @@ public class JoinListener implements Listener {
             if (bPlayer.getPlayer().isOp()) {
                 return;
             }
+            GameJoinRegistrator registrator = SPBedWars.getInstance().gameJoinTemp.remove(event.getPlayer().getUniqueId());
+            if (registrator != null) {
+                return;
+            }
             bPlayer.getPlayer().kick(Component.text("Сервер находится в режиме редактирования\nПожалуйста перезайдите через 5с.\nИли свяжитесь с администрацией для решения проблемы"));
             return;
         }

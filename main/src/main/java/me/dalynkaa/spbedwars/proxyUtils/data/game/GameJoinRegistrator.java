@@ -5,9 +5,9 @@ import com.google.gson.Gson;
 import java.util.UUID;
 
 public class GameJoinRegistrator {
-    private UUID userUUID;
+    private final UUID userUUID;
     private UUID gameId;
-    private UUID serverId;
+    private final UUID serverId;
     private JoinType joinType;
 
     public GameJoinRegistrator(UUID userUUID, UUID gameId, UUID serverId, JoinType joinType) {
@@ -52,6 +52,6 @@ public class GameJoinRegistrator {
     }
 
     public enum JoinType {
-        JOIN, SPEC
+        JOIN, SPEC, EDIT
     }
 }

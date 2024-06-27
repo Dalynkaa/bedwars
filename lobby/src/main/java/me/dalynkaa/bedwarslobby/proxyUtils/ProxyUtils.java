@@ -86,7 +86,15 @@ public class ProxyUtils {
 
     public void requestGameJoin(GameRegistrator game, BPlayer bPlayer, GameJoinRegistrator.JoinType joinType) {
         Jedis jedis = redisConnection.getJedis();
+        assert game != null;
         GameJoinRegistrator gameJoinRegistrator = new GameJoinRegistrator(bPlayer.getUuid(), game.getGameId(), game.getServerID(), joinType);
+        jedis.publish(Channels.GAME_JOIN.getChannel(), gameJoinRegistrator.toJson());
+        returnRes(jedis);
+    }
+
+    public void requestServerJoin(UUID server, BPlayer bPlayer, GameJoinRegistrator.JoinType joinType) {
+        Jedis jedis = redisConnection.getJedis();
+        GameJoinRegistrator gameJoinRegistrator = new GameJoinRegistrator(bPlayer.getUuid(), null, server, joinType);
         jedis.publish(Channels.GAME_JOIN.getChannel(), gameJoinRegistrator.toJson());
         returnRes(jedis);
     }

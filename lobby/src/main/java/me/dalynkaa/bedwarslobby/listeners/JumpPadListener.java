@@ -1,34 +1,58 @@
 package me.dalynkaa.bedwarslobby.listeners;
 
 import me.dalynkaa.bedwarslobby.SPBedWarsLobby;
+import me.dalynkaa.bedwarslobby.events.MarkerMoveEvent;
+import me.dalynkaa.bedwarslobby.proxyUtils.data.enums.MessageType;
+import me.dalynkaa.bedwarslobby.proxyUtils.data.player.BPlayer;
+import me.dalynkaa.bedwarslobby.utils.dtos.markers.ActionMarkerData;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class JumpPadListener implements Listener {
 
+    private final SPBedWarsLobby plugin;
+
     public JumpPadListener(SPBedWarsLobby spBedWars) {
         spBedWars.getServer().getPluginManager().registerEvents(this, spBedWars);
+        this.plugin = spBedWars;
     }
 
     @EventHandler
-    public void jumpPadListener(PlayerMoveEvent event) {
-        Location location = event.getPlayer().getLocation();
-        Player player = event.getPlayer();
-        if (location.add(0, -1, 0).getBlock().getType().equals(Material.RED_GLAZED_TERRACOTTA)) {
-            // push player only when player jumps on the jump pad
-            if (event.getPlayer().isOnGround()) {
+    public void jumpPadListener(MarkerMoveEvent event) {
+        BPlayer bPlayer = event.getPlayer();
+        Player player = bPlayer.getPlayer();
+        Location playerLocation = player.getLocation().add(0, -1, 0);
+
+        boolean isJumping = playerLocation.getBlock().getType() == Material.AIR;
+
+        if (!player.hasMetadata("hasJumped")) {
+            player.setMetadata("hasJumped", new FixedMetadataValue(plugin, false));
+        }
+
+        boolean hasJumped = player.getMetadata("hasJumped").get(0).asBoolean();
+
+        if (isJumping && !hasJumped) {
+            if (!event.getMarkerData().getId().equals("action")) {
                 return;
             }
-            player.setGliding(true);
-            location.getWorld().spawnParticle(Particle.FLAME, location, 10, 0.5, 0, 0.5, 0.1);
-            player.playSound(player, Sound.ITEM_TRIDENT_RIPTIDE_2, 1, 1);
-            event.getPlayer().setVelocity(event.getPlayer().getLocation().getDirection().multiply(2).setY(1));
+            ActionMarkerData actionMarkerData = ActionMarkerData.parse(event.getRawMarkerData());
+            if (actionMarkerData == null) {
+                return;
+            }
+            if (!actionMarkerData.getAction().equals("force_jump")) {
+                return;
+            }
+            player.setVelocity(actionMarkerData.getForce());
+            bPlayer.sendMessage("Jumped", MessageType.SUCCESS);
+
+            player.setMetadata("hasJumped", new FixedMetadataValue(plugin, true));
+        } else if (!isJumping) {
+
+            player.setMetadata("hasJumped", new FixedMetadataValue(plugin, false));
         }
     }
 }

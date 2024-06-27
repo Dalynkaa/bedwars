@@ -70,16 +70,27 @@ public class ProxyUtils {
         thread.start();
     }
 
-    public void registerGame(BWGame game) {
+    private GameRegistrator getRegistration(BWGame game) {
         List<TeamPlayer> activePlayers = new ArrayList<>();
         for (TeamPlayer teamPlayer : game.getPlayers()) {
             if (!teamPlayer.isLoose()) {
                 activePlayers.add(teamPlayer);
             }
         }
-        String json = new GameRegistrator(Config.getServerId(), game.getGameId(), game.getArena().getArenaName(), game.getArena().isEdit(), game.getGameStage(), game.getPlayers(), activePlayers, game.getArena().getArenaType()).toJson();
+        return new GameRegistrator(Config.getServerId(), game.getGameId(), game.getArena().getArenaName(), game.getArena().isEdit(), game.getGameStage(), game.getPlayers(), activePlayers, game.getArena().getArenaType());
+    }
+
+    public void registerGame(BWGame game, boolean edit) {
+        GameRegistrator registration = getRegistration(game);
         Jedis jedis = redisConnection.getJedis();
-        jedis.publish(Channels.GAME_REGISTRATION.getChannel(), json);
+        jedis.publish(Channels.GAME_REGISTRATION.getChannel(), registration.toJson());
+        returnRes(jedis);
+    }
+
+    public void updateGame(BWGame game) {
+        GameRegistrator registration = getRegistration(game);
+        Jedis jedis = redisConnection.getJedis();
+        jedis.publish(Channels.GAME_UPDATE.getChannel(), registration.toJson());
         returnRes(jedis);
     }
 
@@ -129,18 +140,6 @@ public class ProxyUtils {
         returnRes(jedis);
     }
 
-    public void updateGame(BWGame game) {
-        List<TeamPlayer> activePlayers = new ArrayList<>();
-        for (TeamPlayer teamPlayer : game.getPlayers()) {
-            if (!teamPlayer.isLoose()) {
-                activePlayers.add(teamPlayer);
-            }
-        }
-        String json = new GameRegistrator(Config.getServerId(), game.getGameId(), game.getArena().getArenaName(), game.getArena().isEdit(), game.getGameStage(), game.getPlayers(), activePlayers, game.getArena().getArenaType()).toJson();
-        Jedis jedis = redisConnection.getJedis();
-        jedis.publish(Channels.GAME_UPDATE.getChannel(), json);
-        returnRes(jedis);
-    }
 
     private class MyJedisSubscriber extends JedisPubSub {
         @Override
@@ -152,7 +151,13 @@ public class ProxyUtils {
 //                }
             } else if (channel.equals(Channels.GAME_JOIN.getChannel())) {
                 GameJoinRegistrator gameJoinRegistrator = GameJoinRegistrator.fromJson(message);
+                Logger.debug("GameJoinRegistrator: " + gameJoinRegistrator.toJson());
                 if (gameJoinRegistrator.getServerId().equals(Config.getServerId())) {
+                    if (gameJoinRegistrator.getGameId() == null && gameJoinRegistrator.getJoinType() == GameJoinRegistrator.JoinType.EDIT) {
+                        SPBedWars.getInstance().gameJoinTemp.put(gameJoinRegistrator.getUserUUID(), gameJoinRegistrator);
+                        sendPlayerToServer(gameJoinRegistrator.getUserUUID(), Config.getServerName());
+                        return;
+                    }
                     if (gameJoinRegistrator.getGameId() != null) {
                         SPBedWars.getInstance().gameJoinTemp.put(gameJoinRegistrator.getUserUUID(), gameJoinRegistrator);
                         sendPlayerToServer(gameJoinRegistrator.getUserUUID(), Config.getServerName());
@@ -164,18 +169,12 @@ public class ProxyUtils {
                 if (serverEditRegistrator.getServerId().equals(Config.getServerId())) {
                     Config.setServerEdit(serverEditRegistrator.isEdit());
                     if (serverEditRegistrator.isEdit()) {
-                        Bukkit.getScheduler().runTask(SPBedWars.getInstance(), () -> {
-                            BWGame.loadGames();
-                        });
                         for (BWGame game : spBedWars.activeGames.values()) {
                             unregisterGame(game.getGameId());
                         }
                         spBedWars.activeGames.clear();
                     } else {
                         SPBedWars.getInstance().editsGames.clear();
-                        Bukkit.getScheduler().runTask(SPBedWars.getInstance(), () -> {
-                            BWGame.loadGames();
-                        });
                     }
                     Logger.info("Server edit set to " + serverEditRegistrator.isEdit());
                 }

@@ -93,9 +93,8 @@ public class BWGame {
         return this.world;
     }
 
-    public BWGame setWorld(World world) {
+    public void setWorld(World world) {
         this.world = world;
-        return this;
     }
 
     public DeathMatchTimer getDeathMatchTimer() {
@@ -383,19 +382,19 @@ public class BWGame {
             GameArena arena1 = GameArena.getByID(UUID.fromString(s));
             if (Config.getServerEdit()) {
                 arena1.setEdit(true);
-                UUID arenaId = UUID.randomUUID();
-                BWGame game = new BWGame(arenaId, arena1, GameStage.REBUILDING);
-                SPBedWars.getInstance().editsGames.put(arenaId, game);
-                World world = new WorldCreator(arena1.getId().toString()).createWorld();
+                UUID gameId = UUID.randomUUID();
+                BWGame game = new BWGame(gameId, arena1, GameStage.REBUILDING);
+                SPBedWars.getInstance().editsGames.put(gameId, game);
+                new WorldCreator(gameId.toString()).createWorld();
                 game.clearArena();
             }
             if (!arena1.isEdit()) {
-                UUID arenaId = UUID.randomUUID();
-                BWGame game = new BWGame(arenaId, arena1, GameStage.WAITING);
-                SPBedWars.getInstance().activeGames.put(arenaId, game);
-                World world = new WorldCreator(arena1.getId().toString()).createWorld();
+                UUID gameId = UUID.randomUUID();
+                BWGame game = new BWGame(gameId, arena1, GameStage.WAITING);
+                SPBedWars.getInstance().activeGames.put(gameId, game);
+                new WorldCreator(gameId.toString()).createWorld();
                 game.clearArena();
-                SPBedWars.getInstance().proxyUtils.registerGame(game);
+                SPBedWars.getInstance().proxyUtils.registerGame(game, false);
             }
         }
     }
@@ -424,7 +423,7 @@ public class BWGame {
         game.setWorld(world);
         UUID musicPlayerSource = BedWarsMusicApi.getApi().createMusicPlayerSource("game-" + gameId + "-music", arena.getId());
         game.musicPlayerSource = BedWarsMusicApi.getApi().getMusicPlayerSource(musicPlayerSource);
-        SPBedWars.getInstance().proxyUtils.registerGame(game);
+        SPBedWars.getInstance().proxyUtils.registerGame(game, false);
         return game;
     }
 

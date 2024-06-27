@@ -1,6 +1,7 @@
 package me.dalynkaa.spbedwars.mainListener;
 
 import me.dalynkaa.spbedwars.SPBedWars;
+import me.dalynkaa.spbedwars.proxyUtils.data.game.GameJoinRegistrator;
 import me.dalynkaa.spbedwars.utils.config.Config;
 import me.dalynkaa.spbedwars.utils.dataclasses.player.BPlayer;
 import me.dalynkaa.spbedwars.utils.usableClasses.InventoryButton;
@@ -16,31 +17,43 @@ import org.bukkit.inventory.ItemStack;
 public class PreJoinListener implements Listener {
 
     private SPBedWars main;
-    public PreJoinListener(SPBedWars main){
+
+    public PreJoinListener(SPBedWars main) {
         this.main = main;
         main.getServer().getPluginManager().registerEvents(this, main);
     }
 
     @EventHandler
-    public void preJoin(AsyncPlayerPreLoginEvent event){
+    public void preJoin(AsyncPlayerPreLoginEvent event) {
         BPlayer bPlayer = BPlayer.getByUUID(event.getUniqueId());
-        if (bPlayer == null){
+        if (bPlayer == null) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("Ошибка при получении пользователя\nПожалуйста перезайдите через 5с.\nИли свяжитесь с администрацией для решения проблемы"));
             return;
         }
-        if (Config.getServerEdit()){
-            if (Bukkit.getOfflinePlayer(event.getUniqueId()).isOp()){
+        if (Config.getServerEdit()) {
+            GameJoinRegistrator registrator = SPBedWars.getInstance().gameJoinTemp.remove(event.getUniqueId());
+            if (registrator != null) {
+                if (registrator.getJoinType().equals(GameJoinRegistrator.JoinType.EDIT)) {
+                    return;
+                }
+            }
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("Сервер находится в режиме редактирования\nПожалуйста перезайдите через 5с.\nИли свяжитесь с администрацией для решения проблемы"));
+            return;
+        }
+        if (Config.getServerEdit()) {
+            if (Bukkit.getOfflinePlayer(event.getUniqueId()).isOp()) {
                 return;
             }
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("Сервер находится в режиме редактирования\nПожалуйста перезайдите через 5с.\nИли свяжитесь с администрацией для решения проблемы"));
         }
-        if (!SPBedWars.getInstance().gameJoinTemp.containsKey(event.getUniqueId())){
+        if (!SPBedWars.getInstance().gameJoinTemp.containsKey(event.getUniqueId())) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("Вы не выбрали игру\nПожалуйста перезайдите через 5с.\nИли свяжитесь с администрацией для решения проблемы"));
             return;
         }
     }
+
     @EventHandler
-    public void joinListener(PlayerJoinEvent event){
+    public void joinListener(PlayerJoinEvent event) {
         event.getPlayer().getInventory().clear();
         ItemStack backToLobby = InventoryButton.from(Material.PAPER)
                 .setName(Component.text("Вернуться в лобби"))
